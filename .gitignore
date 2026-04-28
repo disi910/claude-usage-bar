@@ -2,8 +2,9 @@
 __pycache__/
 *.pyc
 
-# Local-only assets used for Chrome Web Store submission
+# Raw captures (the cleaned-up versions in screenshots/ are tracked)
 claudeusage*.png
-screenshots/
+
+# Local-only Chrome Web Store assets
 screenshots.py
 STORE_DESCRIPTION.md
