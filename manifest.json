@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Usage Bar for Claude",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Shows your Claude.ai 5-hour usage limit as a small bar at the top of the page.",
+  "permissions": ["storage"],
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
@@ -14,7 +15,10 @@
       "48": "icon48.png",
       "128": "icon128.png"
     },
-    "default_title": "Usage Bar for Claude"
+    "default_title": "Usage Bar for Claude (click to hide)"
+  },
+  "background": {
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {

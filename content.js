@@ -3,8 +3,16 @@
   let orgId = null;
   let bar, fill, text;
   let lastData = null;
+  let enabled = true;
+
+  function removeBar() {
+    const existing = document.getElementById("claude-usage-bar");
+    if (existing) existing.remove();
+    bar = fill = text = null;
+  }
 
   function injectBar() {
+    if (!enabled) return;
     if (document.getElementById("claude-usage-bar")) return;
     bar = document.createElement("div");
     bar.id = "claude-usage-bar";
@@ -92,14 +100,33 @@
     }, 1000);
   }
 
-  function start() {
-    injectBar();
+  async function start() {
+    const stored = await chrome.storage.local.get("enabled");
+    enabled = stored.enabled !== false;
+
+    if (enabled) {
+      injectBar();
+      renderFromData(lastData);
+    }
+
     tick();
     setInterval(tick, POLL_MS);
     startCountdownLoop();
+
     new MutationObserver(() => injectBar()).observe(document.body, {
       childList: true,
       subtree: false,
+    });
+
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== "local" || !changes.enabled) return;
+      enabled = changes.enabled.newValue !== false;
+      if (enabled) {
+        injectBar();
+        renderFromData(lastData);
+      } else {
+        removeBar();
+      }
     });
   }
 
