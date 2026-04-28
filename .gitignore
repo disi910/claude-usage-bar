@@ -1,4 +1,9 @@
 .DS_Store
 __pycache__/
 *.pyc
+
+# Local-only assets used for Chrome Web Store submission
 claudeusage*.png
+screenshots/
+screenshots.py
+STORE_DESCRIPTION.md
