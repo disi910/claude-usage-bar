@@ -1,9 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "Claude Usage Bar",
-  "version": "0.1.0",
-  "description": "Shows a local 5-hour message usage bar at the top of claude.ai.",
-  "permissions": ["storage"],
+  "name": "Usage Bar for Claude",
+  "version": "0.2.0",
+  "description": "Shows your Claude.ai 5-hour usage limit as a small bar at the top of the page.",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    },
+    "default_title": "Usage Bar for Claude"
+  },
   "content_scripts": [
     {
       "matches": ["https://claude.ai/*"],

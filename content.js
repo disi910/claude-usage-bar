@@ -11,7 +11,6 @@
     bar.innerHTML = `
       <div class="cub-fill"></div>
       <div class="cub-text">
-        <span class="cub-label">5h</span>
         <span class="cub-pct">— %</span>
         <span class="cub-sep">·</span>
         <span class="cub-reset">loading…</span>
