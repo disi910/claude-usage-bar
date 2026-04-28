@@ -1,10 +1,8 @@
 (() => {
-  const LIMIT = 45;
-  const WINDOW_MS = 5 * 60 * 60 * 1000;
-  const DEBOUNCE_MS = 800;
-
-  let lastRecord = 0;
+  const POLL_MS = 30 * 1000;
+  let orgId = null;
   let bar, fill, text;
+  let lastData = null;
 
   function injectBar() {
     if (document.getElementById("claude-usage-bar")) return;
@@ -13,102 +11,93 @@
     bar.innerHTML = `
       <div class="cub-fill"></div>
       <div class="cub-text">
-        <span class="cub-count">0 / ${LIMIT}</span>
+        <span class="cub-label">5h</span>
+        <span class="cub-pct">— %</span>
         <span class="cub-sep">·</span>
-        <span class="cub-reset">resets —</span>
+        <span class="cub-reset">loading…</span>
       </div>`;
     document.body.appendChild(bar);
     fill = bar.querySelector(".cub-fill");
     text = {
-      count: bar.querySelector(".cub-count"),
+      pct: bar.querySelector(".cub-pct"),
       reset: bar.querySelector(".cub-reset"),
     };
   }
 
   function fmtDuration(ms) {
-    if (ms <= 0) return "—";
+    if (ms <= 0) return "now";
     const total = Math.floor(ms / 1000);
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
-    const s = total % 60;
     if (h > 0) return `${h}h ${m}m`;
-    if (m > 0) return `${m}m ${s.toString().padStart(2, "0")}s`;
-    return `${s}s`;
+    return `${m}m`;
   }
 
-  async function getSends() {
-    const { sends = [] } = await chrome.storage.local.get("sends");
-    return sends;
+  async function discoverOrgId() {
+    if (orgId) return orgId;
+    try {
+      const res = await fetch("/api/organizations", { credentials: "include" });
+      if (!res.ok) return null;
+      const orgs = await res.json();
+      if (Array.isArray(orgs) && orgs.length > 0) {
+        orgId = orgs[0].uuid || orgs[0].id;
+        return orgId;
+      }
+    } catch (e) {
+      console.warn("[usage-bar] org discovery failed", e);
+    }
+    return null;
   }
 
-  async function setSends(sends) {
-    await chrome.storage.local.set({ sends });
-  }
-
-  async function recordSend() {
-    const now = Date.now();
-    if (now - lastRecord < DEBOUNCE_MS) return;
-    lastRecord = now;
-    const sends = await getSends();
-    sends.push(now);
-    await setSends(sends);
-    render();
-  }
-
-  async function render() {
-    if (!bar) return;
-    const now = Date.now();
-    const sends = (await getSends()).filter((t) => now - t < WINDOW_MS);
-    const used = sends.length;
-    const pct = Math.min(100, (used / LIMIT) * 100);
-    fill.style.width = pct + "%";
-    text.count.textContent = `${used} / ${LIMIT}`;
-    if (used === 0) {
-      text.reset.textContent = "resets —";
-    } else {
-      const oldest = Math.min(...sends);
-      const remaining = WINDOW_MS - (now - oldest);
-      text.reset.textContent = `resets in ${fmtDuration(remaining)}`;
+  async function fetchUsage() {
+    const id = await discoverOrgId();
+    if (!id) return null;
+    try {
+      const res = await fetch(`/api/organizations/${id}/usage`, {
+        credentials: "include",
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (e) {
+      console.warn("[usage-bar] usage fetch failed", e);
+      return null;
     }
   }
 
-  function isComposer(el) {
-    if (!el) return false;
-    if (el.getAttribute && el.getAttribute("contenteditable") === "true") return true;
-    return !!el.closest?.('div[contenteditable="true"]');
+  function renderFromData(data) {
+    if (!bar) return;
+    if (!data || !data.five_hour) {
+      text.pct.textContent = "— %";
+      text.reset.textContent = "no data";
+      fill.style.width = "0%";
+      return;
+    }
+    const fh = data.five_hour;
+    const pct = Math.max(0, Math.min(100, fh.utilization || 0));
+    fill.style.width = pct + "%";
+    text.pct.textContent = `${Math.round(pct)} %`;
+    const resetMs = new Date(fh.resets_at).getTime() - Date.now();
+    text.reset.textContent = `resets in ${fmtDuration(resetMs)}`;
+    bar.classList.toggle("cub-full", pct >= 100);
   }
 
-  function hookEvents() {
-    document.addEventListener(
-      "keydown",
-      (e) => {
-        if (e.key === "Enter" && !e.shiftKey && isComposer(document.activeElement)) {
-          recordSend();
-        }
-      },
-      true
-    );
+  async function tick() {
+    const data = await fetchUsage();
+    if (data) lastData = data;
+    renderFromData(lastData);
+  }
 
-    document.addEventListener(
-      "click",
-      (e) => {
-        const btn = e.target.closest?.("button");
-        if (!btn) return;
-        const label = (btn.getAttribute("aria-label") || "").toLowerCase();
-        if (label.includes("send")) recordSend();
-      },
-      true
-    );
+  function startCountdownLoop() {
+    setInterval(() => {
+      if (lastData) renderFromData(lastData);
+    }, 1000);
   }
 
   function start() {
     injectBar();
-    hookEvents();
-    render();
-    setInterval(render, 1000);
-    chrome.storage.onChanged.addListener((changes, area) => {
-      if (area === "local" && changes.sends) render();
-    });
+    tick();
+    setInterval(tick, POLL_MS);
+    startCountdownLoop();
     new MutationObserver(() => injectBar()).observe(document.body, {
       childList: true,
       subtree: false,
