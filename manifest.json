@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Claude Usage Bar",
+  "version": "0.1.0",
+  "description": "Shows a local 5-hour message usage bar at the top of claude.ai.",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
