@@ -4,6 +4,12 @@ A tiny Chrome extension that puts your Claude.ai 5-hour usage right at the top o
 
 It is not made by Anthropic and is not affiliated with Anthropic in any way.
 
+## Screenshots
+
+![Home page with the bar](screenshots/01-home-1280.png)
+![Bar visible during a long chat](screenshots/02-chat-1280.png)
+![Close-up of the bar](screenshots/03-closeup-1280.png)
+
 ## What you get
 
 A small pill at the top center of every Claude.ai page. It shows the same percentage you would see on the usage settings page, plus a live countdown to when your 5-hour window resets. The bar fills with Claude's coral color as you use up the window. When you hit 100 percent, it turns a deeper red so you can spot it at a glance.
