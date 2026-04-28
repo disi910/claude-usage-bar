@@ -86,6 +86,68 @@ def build_closeup(src_path: Path, target: tuple[int, int]) -> Image.Image:
     return canvas
 
 
+def build_promo_tile() -> Image.Image:
+    """Small promo tile for Chrome Web Store: 440x280, no alpha."""
+    W, H = 440, 280
+    CORAL = (217, 119, 87)
+    CORAL_DEEP = (185, 81, 58)
+    CREAM = (245, 244, 238)
+    CREAM_BORDER = (232, 230, 220)
+    INK = (31, 27, 20)
+    MUTED = (110, 102, 88)
+
+    canvas = Image.new("RGB", (W, H), CREAM)
+    draw = ImageDraw.Draw(canvas)
+
+    bar_w = int(W * 0.78)
+    bar_h = 36
+    bar_x = (W - bar_w) // 2
+    bar_y = 64
+    radius = bar_h // 2
+
+    draw.rounded_rectangle(
+        [(bar_x, bar_y), (bar_x + bar_w, bar_y + bar_h)],
+        radius=radius,
+        fill=CREAM,
+        outline=CREAM_BORDER,
+        width=2,
+    )
+    fill_w = int(bar_w * 0.62)
+    if fill_w >= 2 * radius:
+        draw.rounded_rectangle(
+            [(bar_x, bar_y), (bar_x + fill_w, bar_y + bar_h)],
+            radius=radius,
+            fill=CORAL,
+        )
+
+    try:
+        bar_font = ImageFont.truetype("/System/Library/Fonts/HelveticaNeue.ttc", 14)
+        title_font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Georgia.ttf", 30)
+        sub_font = ImageFont.truetype("/System/Library/Fonts/HelveticaNeue.ttc", 15)
+    except OSError:
+        bar_font = title_font = sub_font = ImageFont.load_default()
+
+    bar_text = "62 %  ·  resets in 2h 14m"
+    tw = draw.textlength(bar_text, font=bar_font)
+    draw.text(
+        (bar_x + (bar_w - tw) / 2, bar_y + (bar_h - 14) / 2 - 1),
+        bar_text,
+        font=bar_font,
+        fill=INK,
+    )
+
+    title = "Usage Bar for Claude"
+    sub = "Always know how much you have left."
+
+    title_w = draw.textlength(title, font=title_font)
+    draw.text(((W - title_w) / 2, 150), title, font=title_font, fill=INK)
+
+    sub_w = draw.textlength(sub, font=sub_font)
+    draw.text(((W - sub_w) / 2, 200), sub, font=sub_font, fill=MUTED)
+
+    return canvas
+
+
 def main():
     src1 = ROOT / "claudeusage1.png"  # home / "Back at it, Didrik"
     src2 = ROOT / "claudeusage2.png"  # chat with tokens explanation
@@ -97,6 +159,10 @@ def main():
         fit_full_screenshot(src2, (w, h)).save(OUT / f"02-chat-{suffix}")
         build_closeup(src3, (w, h)).save(OUT / f"03-closeup-{suffix}")
         print(f"wrote 1280-pair set for {w}x{h}")
+
+    promo = build_promo_tile()
+    promo.save(OUT / "promo-tile-440x280.png")
+    print("wrote promo-tile-440x280.png")
 
     print("done")
 
