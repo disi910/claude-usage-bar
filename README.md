@@ -11,9 +11,13 @@ It is not made by Anthropic and is not affiliated with Anthropic in any way.
 
 A small pill at the top center of every Claude.ai page. It shows the same percentage you would see on the usage settings page, plus a live countdown to when your 5-hour window resets. The bar fills with Claude's coral color as you use up the window. When you hit 100 percent, it turns a deeper red so you can spot it at a glance.
 
+## Install
+
+Get it from the Chrome Web Store: [Usage Bar for Claude](https://chromewebstore.google.com/detail/imblbfhdbdecholhjbagcjahdkhidneb).
+
 ## Install from source
 
-The extension is not on the Chrome Web Store yet. For now you load it manually. It only takes a minute.
+If you would rather load the extension manually, it only takes a minute.
 
 1. Download or clone this repository to your computer.
 2. Open Chrome and go to `chrome://extensions`.
