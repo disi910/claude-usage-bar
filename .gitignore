@@ -8,3 +8,4 @@ claudeusage*.png
 # Local-only Chrome Web Store assets
 screenshots.py
 STORE_DESCRIPTION.md
+store-assets/
