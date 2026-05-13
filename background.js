@@ -3,7 +3,7 @@ chrome.action.onClicked.addListener(async () => {
   const next = !enabled;
   await chrome.storage.local.set({ enabled: next });
   chrome.action.setTitle({
-    title: next ? "Usage Bar for Claude (click to hide)" : "Usage Bar for Claude (hidden, click to show)",
+    title: next ? "Claude Usage Bar (click to hide)" : "Claude Usage Bar (hidden, click to show)",
   });
 });
 
