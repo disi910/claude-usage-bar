@@ -1,66 +1,66 @@
-# Usage Bar for Claude
+# Claude Usage Bar
 
-A tiny Chrome extension that puts your Claude.ai 5-hour usage right at the top of the page, so you always know how close you are to the limit without having to open the settings.
+A Chrome extension that adds a compact, native-feeling usage indicator to the Claude.ai composer. Keep an eye on your plan usage, current chat context, and prompt-cache TTL without leaving the conversation.
 
-It is not made by Anthropic and is not affiliated with Anthropic in any way.
+Not affiliated with Anthropic.
 
-![Close-up of the bar](screenshots/03-closeup-1280.png)
-![Home page with the bar](screenshots/01-home-1280.png)
+![Composer bar](screenshots/03-closeup-1280.png)
+![Hover panel](screenshots/01-home-1280.png)
 
 ## What you get
 
-A small pill at the top center of every Claude.ai page. It shows the same percentage you would see on the usage settings page, plus a live countdown to when your 5-hour window resets. The bar fills with Claude's coral color as you use up the window. When you hit 100 percent, it turns a deeper red so you can spot it at a glance.
+- A composer-anchored bar that mirrors Claude's coral palette and dark/light themes.
+- A hover panel with four rows: 5-hour limit, Weekly · all models, Weekly · Claude Opus, Routines.
+- A circular indicator that estimates how much of the 200k context window the current chat is using.
+- A small hourglass next to the bar that counts down a 5-minute prompt-cache TTL after each assistant turn.
 
 ## Install
 
-Get it from the Chrome Web Store: [Usage Bar for Claude](https://chromewebstore.google.com/detail/imblbfhdbdecholhjbagcjahdkhidneb).
+From the Chrome Web Store: [Claude Usage Bar](https://chromewebstore.google.com/detail/imblbfhdbdecholhjbagcjahdkhidneb).
 
 ## Install from source
 
-If you would rather load the extension manually, it only takes a minute.
+1. Clone or download this repo.
+2. Open `chrome://extensions`.
+3. Enable Developer mode.
+4. Click Load unpacked and select the folder.
 
-1. Download or clone this repository to your computer.
-2. Open Chrome and go to `chrome://extensions`.
-3. Turn on "Developer mode" using the toggle in the top right.
-4. Click "Load unpacked" and pick the folder you just downloaded.
-
-That is it. Open Claude.ai (or refresh it if it was already open) and you should see the bar at the top.
+Reload any Claude.ai tab.
 
 ## How it works
 
-When you visit Claude.ai, the extension asks the same internal endpoint that the official usage page uses. It looks up your organization, then reads your current 5-hour utilization and the time it resets. It checks again every 30 seconds so the number stays fresh, and the countdown ticks every second on its own.
+- **Plan usage**: same internal endpoint the Claude usage settings page uses. Polled every 30s; the countdown ticks every second.
+- **Context donut**: reads visible conversation text from the DOM and divides character count by 4 for a coarse token estimate. No message content is stored.
+- **Cache timer**: a local 5-minute timer that restarts every time a new assistant message appears.
 
-Everything runs inside your browser. There is no server, no analytics, no third party involved.
+Everything runs inside your browser. No analytics, no server, no third party.
 
 ## Privacy
 
-The extension only talks to Claude.ai itself, using your existing login. Your usage numbers never leave your computer. There is no tracking, no telemetry, no account creation, nothing to sign up for.
+Only same-origin Claude.ai calls. The extension stores sanitized usage metadata and numeric estimates locally for rendering. No prompt, response, cookie, or auth data is stored. Uninstalling removes every trace.
 
 ## Limitations
 
-Things to know before you rely on this:
-
-* It only shows the 5-hour bar. The 7-day numbers are not displayed.
-* If you belong to more than one Claude organization, it picks the first one it finds.
-* It uses an internal Claude.ai endpoint that is not officially documented. If Anthropic changes that endpoint, the bar will go blank until the extension is updated.
-* It is not affiliated with or endorsed by Anthropic.
+- If your usage payload doesn't include a particular row (e.g. Routines), the panel shows `—`.
+- Token estimates are coarse — ~4 chars/token, no tokenizer.
+- Multi-org accounts use the first organization the API returns.
+- Uses an undocumented Claude.ai endpoint. If Anthropic changes it, the panel will go blank until an update lands.
 
 ## Contributing
 
-Pull requests are welcome. The code is small on purpose, four files plus a manifest. If you want to add the 7-day bar, an organization switcher, or a Firefox port, open an issue first so we can talk about it.
+Pull requests welcome. Open an issue first for anything bigger than a tweak — Firefox port, org switcher, settings page are all reasonable next steps.
 
 ## Project layout
 
 ```
 manifest.json         extension config
-content.js            injects and updates the bar on claude.ai
-background.js         handles the toolbar-icon toggle
-styles.css            bar styling
+content.js            composer mount + observers + rendering
+background.js         toolbar-icon toggle
+styles.css            bar, panel, donut, hourglass styling
 icon{16,48,128}.png   toolbar and store icons
-scripts/icon.py       one-shot script to regenerate the icons
 privacy-policy.html   served via GitHub Pages, used in the store listing
 ```
 
 ## License
 
-MIT. Do whatever you want with it, just do not blame the author if something breaks.
+MIT.
