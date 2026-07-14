@@ -24,6 +24,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 TARGET_W, TARGET_H = 1280, 800
 PROMO_W, PROMO_H = 440, 280
+MARQUEE_W, MARQUEE_H = 1400, 560
 
 CORAL = (217, 119, 87)        # --cub-coral
 CORAL_DEEP = (201, 100, 66)   # --cub-coral-deep
@@ -123,6 +124,42 @@ def build_promo_tile(src_path: Path, out_path: Path) -> None:
     print(f"  promo tile -> {out_path}  ({PROMO_W}x{PROMO_H})")
 
 
+def build_marquee(src_path: Path, out_path: Path) -> None:
+    """1400x560 marquee banner: headline left, screenshot right on a tinted blur."""
+    src = Image.open(src_path).convert("RGB")
+
+    bg = src.copy().filter(ImageFilter.GaussianBlur(radius=32))
+    bg = bg.resize((MARQUEE_W, MARQUEE_H), Image.LANCZOS)
+    overlay = Image.new("RGB", (MARQUEE_W, MARQUEE_H), PAPER)
+    bg = Image.blend(bg, overlay, alpha=0.82)
+
+    # Screenshot fills the right ~60%, letterboxed with a thin coral frame.
+    shot_w = int(MARQUEE_W * 0.58)
+    shot_h = MARQUEE_H - 80
+    shot = fit_to_canvas(src, shot_w, shot_h)
+    frame = Image.new("RGB", (shot_w + 4, shot_h + 4), CORAL)
+    frame.paste(shot, (2, 2))
+    bg.paste(frame, (MARQUEE_W - shot_w - 44, (MARQUEE_H - shot_h) // 2 - 2))
+
+    draw = ImageDraw.Draw(bg)
+    title_font = load_font(56)
+    sub_font = load_font(26)
+
+    x = 56
+    y = 150
+    for line in ["Your Claude usage,", "at a glance."]:
+        draw.text((x, y), line, fill=INK, font=title_font)
+        _, lh = text_size(draw, line, title_font)
+        y += lh + 12
+
+    y += 18
+    draw.text((x, y), "Plan limits · context window · prompt cache", fill=CORAL_DEEP, font=sub_font)
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    bg.save(out_path, format="PNG", optimize=True)
+    print(f"  marquee -> {out_path}  ({MARQUEE_W}x{MARQUEE_H})")
+
+
 def build_screenshot(src_path: Path, out_path: Path) -> None:
     img = Image.open(src_path)
     fitted = fit_to_canvas(img, TARGET_W, TARGET_H)
@@ -173,6 +210,7 @@ def main() -> int:
         else next((p for p in sources if p.name.startswith("04")), sources[0])
     )
     build_promo_tile(promo_src, out_dir / "promo-tile-440x280.png")
+    build_marquee(promo_src, out_dir / "marquee-1400x560.png")
 
     print("\ndone. upload these from store-assets/output/")
     return 0

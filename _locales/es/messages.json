@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k de longitud de contexto",
+    "message": "$TOKENS$ / $LIMIT$ de longitud de contexto",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -124,5 +127,8 @@
   },
   "positionComposer": {
     "message": "En el cuadro de chat"
+  },
+  "leaveReview": {
+    "message": "¿Te gusta? Deja una reseña"
   }
 }

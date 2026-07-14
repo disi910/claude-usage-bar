@@ -1,8 +1,16 @@
 (() => {
   const POLL_MS = 30 * 1000;
   const CACHE_TTL_MS = 5 * 60 * 1000;
-  const CONTEXT_WINDOW = 200_000;
-  const CHARS_PER_TOKEN = 4;
+  const DEFAULT_CONTEXT_WINDOW = 200_000;
+
+  // Heuristic tokenizer coefficients. CJK scripts tokenize near one token per
+  // character; spaced scripts near 1.3 tokens per word; long unspaced runs
+  // (code, URLs) split roughly every 3.5 characters.
+  const TOKENS_PER_WORD = 1.32;
+  const TOKENS_PER_CJK_CHAR = 1.0;
+  const LONG_WORD_CHARS = 3.5;
+  const MSG_OVERHEAD_TOKENS = 6;
+  const IMAGE_TOKENS = 1500;
 
   let orgId = null;
   let root = null;
@@ -65,14 +73,14 @@
     return m ? m[1] : null;
   }
 
-  let lastConvFetch = { id: null, ts: 0, tokens: null };
-  async function fetchConversationTokens() {
+  let lastConvFetch = { id: null, ts: 0, stats: null };
+  async function fetchConversationStats() {
     const convId = currentConversationId();
     if (!convId) return null;
     const now = Date.now();
     // throttle: refetch at most every 4s for the same conversation
     if (lastConvFetch.id === convId && now - lastConvFetch.ts < 4000) {
-      return lastConvFetch.tokens;
+      return lastConvFetch.stats;
     }
     const id = await discoverOrgId();
     if (!id) return null;
@@ -81,19 +89,20 @@
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) return null;
       const data = await res.json();
-      const tokens = extractTokensFromConversation(data);
-      lastConvFetch = { id: convId, ts: now, tokens };
-      return tokens;
+      const stats = extractConversationStats(data);
+      lastConvFetch = { id: convId, ts: now, stats };
+      return stats;
     } catch (e) {
       console.warn("[usage-bar] conversation fetch failed", e);
       return null;
     }
   }
 
-  function extractTokensFromConversation(data) {
-    // Walks the conversation tree and sums any token-count-shaped numeric fields.
-    // Defensive: Anthropic's frontend payload shape is undocumented and may change,
-    // so we look for several common field names.
+  // Returns { contextTokens, totalTokens, window, source } or null.
+  // contextTokens covers only the current branch of the conversation tree
+  // (what actually occupies the context window); totalTokens sums every
+  // message ever sent, including abandoned branches after edits/retries.
+  function extractConversationStats(data) {
     if (!data) return null;
     const messages =
       data.chat_messages ||
@@ -101,6 +110,67 @@
       (Array.isArray(data.tree) ? data.tree : null) ||
       [];
     if (!Array.isArray(messages) || messages.length === 0) return null;
+
+    const branch = currentBranchMessages(data, messages);
+    const win = detectContextWindow(data);
+
+    // Exact tier: per-message token counts, if the payload carries them.
+    const exactBranch = sumMsgTokens(branch);
+    const exactTotal = sumMsgTokens(messages);
+    if (exactBranch != null) {
+      return {
+        contextTokens: exactBranch,
+        totalTokens: exactTotal != null ? exactTotal : exactBranch,
+        window: win,
+        source: "exact",
+      };
+    }
+
+    // Estimate tier: run the heuristic over the full payload text — unlike
+    // the DOM, this includes tool calls/results, attachments and thinking.
+    return {
+      contextTokens: estimateMessagesTokens(branch),
+      totalTokens: estimateMessagesTokens(messages),
+      window: win,
+      source: "estimate",
+    };
+  }
+
+  function detectContextWindow(data) {
+    const candidates = [
+      data.context_window,
+      data.context_window_size,
+      data.model_context_window,
+      data.settings && data.settings.context_window,
+    ];
+    for (const c of candidates) {
+      if (typeof c === "number" && isFinite(c) && c >= 10_000) return c;
+    }
+    return DEFAULT_CONTEXT_WINDOW;
+  }
+
+  // Follows parent links from the current leaf to isolate the active branch.
+  // Falls back to all messages when the payload has no tree metadata.
+  function currentBranchMessages(data, messages) {
+    const leaf =
+      data.current_leaf_message_uuid || data.current_leaf_uuid || data.current_leaf || null;
+    if (!leaf) return messages;
+    const byId = new Map();
+    for (const m of messages) {
+      const id = m && (m.uuid || m.id);
+      if (id) byId.set(id, m);
+    }
+    const chain = [];
+    let cur = byId.get(leaf);
+    let guard = 0;
+    while (cur && guard++ < 10_000) {
+      chain.push(cur);
+      cur = byId.get(cur.parent_message_uuid || cur.parent_uuid || cur.parent);
+    }
+    return chain.length ? chain : messages;
+  }
+
+  function sumMsgTokens(messages) {
     let total = 0;
     let foundAny = false;
     for (const m of messages) {
@@ -133,6 +203,73 @@
       }
     }
     return any ? sum : null;
+  }
+
+  function estimateMessagesTokens(messages) {
+    let total = 0;
+    for (const m of messages) {
+      total += MSG_OVERHEAD_TOKENS + estimateTokens(collectMessageText(m));
+      total += IMAGE_TOKENS * countMessageImages(m);
+    }
+    return total;
+  }
+
+  // Pulls text out of every content block shape the payload can carry:
+  // plain text, thinking, tool_use inputs, tool_result contents, attachments.
+  function collectMessageText(m) {
+    if (!m || typeof m !== "object") return "";
+    let out = "";
+    const push = (s) => {
+      if (typeof s === "string" && s) out += s + "\n";
+    };
+    push(m.text);
+    const blocks = Array.isArray(m.content) ? m.content : [];
+    for (const b of blocks) {
+      if (!b || typeof b !== "object") continue;
+      push(b.text);
+      push(b.thinking);
+      push(b.summary);
+      if (b.input != null && typeof b.input === "object") push(JSON.stringify(b.input));
+      if (typeof b.content === "string") push(b.content);
+      else if (Array.isArray(b.content)) {
+        for (const n of b.content) {
+          if (n && typeof n === "object") push(n.text);
+          else if (typeof n === "string") push(n);
+        }
+      }
+    }
+    const atts = Array.isArray(m.attachments) ? m.attachments : [];
+    for (const a of atts) {
+      if (a && typeof a === "object") push(a.extracted_content || a.text);
+    }
+    return out;
+  }
+
+  function countMessageImages(m) {
+    const files = []
+      .concat(Array.isArray(m.files) ? m.files : [])
+      .concat(Array.isArray(m.files_v2) ? m.files_v2 : []);
+    return files.filter((f) => {
+      if (!f || typeof f !== "object") return false;
+      const kind = f.file_kind || f.kind || f.type || "";
+      const name = f.file_name || f.name || "";
+      return /image/i.test(kind) || /\.(png|jpe?g|gif|webp|heic)$/i.test(name);
+    }).length;
+  }
+
+  // Word/script-aware token estimate. Considerably closer to Claude's real
+  // tokenizer than flat chars/4, especially for CJK text and code.
+  function estimateTokens(text) {
+    if (!text) return 0;
+    const cjkRe = /[\u3000-\u9fff\uac00-\ud7af\u3040-\u30ff\uf900-\ufaff]/g;
+    const cjk = (text.match(cjkRe) || []).length;
+    const rest = text.replace(cjkRe, " ");
+    let t = cjk * TOKENS_PER_CJK_CHAR;
+    const words = rest.match(/\S+/g) || [];
+    for (const w of words) {
+      t += w.length <= 9 ? TOKENS_PER_WORD : w.length / LONG_WORD_CHARS;
+    }
+    return Math.round(t);
   }
 
   // ---------- formatting ----------
@@ -443,29 +580,31 @@
     return text;
   }
 
-  function paintContext(tokens, source) {
+  function paintContext(contextTokens, totalTokens, win, source) {
     if (!root) return;
-    const pct = Math.max(0, Math.min(100, (tokens / CONTEXT_WINDOW) * 100));
+    const pct = Math.max(0, Math.min(100, (contextTokens / win) * 100));
     const arc = root.querySelector(".cub-donut-arc");
     const circumference = 2 * Math.PI * 13;
     if (arc) arc.setAttribute("stroke-dashoffset", String(circumference * (1 - pct / 100)));
     if (donutPct) donutPct.textContent = `${Math.round(pct)}%`;
-    const tk = formatTokens(tokens);
     const suffix = source === "estimate" ? t("estimateSuffix") : "";
     setTip(donutTip, "pct", t("pctOfContext", [String(Math.round(pct))]) + suffix);
-    setTip(donutTip, "ctx", t("ctxLength", [tk]));
-    setTip(donutTip, "total", t("totalTokens", [tk]) + suffix);
+    setTip(donutTip, "ctx", t("ctxLength", [formatTokens(contextTokens), formatTokens(win)]));
+    setTip(donutTip, "total", t("totalTokens", [formatTokens(totalTokens)]) + suffix);
   }
 
   function renderContext() {
     if (!root) return;
-    // 1. Paint the fast heuristic immediately so the donut never goes stale
-    const text = readConversationText();
-    const estTokens = Math.ceil(text.length / CHARS_PER_TOKEN);
-    paintContext(estTokens, "estimate");
-    // 2. In the background, try the conversation API for exact numbers
-    fetchConversationTokens().then((exact) => {
-      if (typeof exact === "number" && exact > 0) paintContext(exact, "exact");
+    // 1. Paint the fast DOM heuristic immediately so the donut never goes stale
+    const estTokens = estimateTokens(readConversationText());
+    paintContext(estTokens, estTokens, DEFAULT_CONTEXT_WINDOW, "estimate");
+    // 2. In the background, upgrade from the conversation API — exact counts
+    // if the payload carries them, else a full-payload estimate (includes
+    // tool traffic and attachments the DOM never shows).
+    fetchConversationStats().then((stats) => {
+      if (stats && stats.contextTokens > 0) {
+        paintContext(stats.contextTokens, stats.totalTokens, stats.window, stats.source);
+      }
     });
   }
 
@@ -551,7 +690,10 @@
     composerObserver.observe(document.body, { childList: true, subtree: true });
   }
 
+  // Position sync loop. Suspends entirely while the tab is hidden; the
+  // visibilitychange listener in start() restarts it.
   function rafLoop() {
+    if (document.hidden) return;
     if (root && document.body.contains(root)) syncPosition();
     requestAnimationFrame(rafLoop);
   }
@@ -571,12 +713,20 @@
 
     if (enabled) mount();
     tick();
-    setInterval(tick, POLL_MS);
     setInterval(() => {
+      if (!document.hidden) tick();
+    }, POLL_MS);
+    setInterval(() => {
+      if (document.hidden) return;
       if (lastUsage) renderUsage(lastUsage);
       renderCache();
     }, 1000);
     window.addEventListener("resize", syncPosition);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) return;
+      tick();
+      requestAnimationFrame(rafLoop);
+    });
 
     watchComposerHost();
     watchConversation();

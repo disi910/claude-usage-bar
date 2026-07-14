@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k コンテキスト長",
+    "message": "$TOKENS$ / $LIMIT$ コンテキスト長",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -124,5 +127,8 @@
   },
   "positionComposer": {
     "message": "チャット欄内"
+  },
+  "leaveReview": {
+    "message": "気に入ったらレビューをお願いします"
   }
 }

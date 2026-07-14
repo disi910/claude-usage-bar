@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k 컨텍스트 길이",
+    "message": "$TOKENS$ / $LIMIT$ 컨텍스트 길이",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -124,5 +127,8 @@
   },
   "positionComposer": {
     "message": "채팅창 안"
+  },
+  "leaveReview": {
+    "message": "마음에 드시나요? 리뷰를 남겨주세요"
   }
 }

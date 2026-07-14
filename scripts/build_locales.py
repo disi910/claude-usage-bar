@@ -11,17 +11,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Keys whose message uses a placeholder. Chrome substitutes $1 at runtime.
+# Keys whose message uses placeholders. Chrome substitutes $1, $2, … in order.
 PLACEHOLDER_KEYS = {
-    "resetsIn": "time",
-    "resets": "time",
-    "pctOfContext": "pct",
-    "ctxLength": "tokens",
-    "totalTokens": "tokens",
-    "cacheExpiresIn": "time",
-    "unitDays": "n",
-    "unitHours": "n",
-    "unitMinutes": "n",
+    "resetsIn": ["time"],
+    "resets": ["time"],
+    "pctOfContext": ["pct"],
+    "ctxLength": ["tokens", "limit"],
+    "totalTokens": ["tokens"],
+    "cacheExpiresIn": ["time"],
+    "unitDays": ["n"],
+    "unitHours": ["n"],
+    "unitMinutes": ["n"],
 }
 
 TRANSLATIONS = {
@@ -40,7 +40,7 @@ TRANSLATIONS = {
         "resets": "resets $TIME$",
         "contextTokenUsage": "Context & token usage:",
         "pctOfContext": "$PCT$% of context window used",
-        "ctxLength": "$TOKENS$ / 200k context length",
+        "ctxLength": "$TOKENS$ / $LIMIT$ context length",
         "totalTokens": "$TOKENS$ total tokens used",
         "estimateSuffix": " (estimate)",
         "contextAriaLabel": "Context window usage",
@@ -53,6 +53,7 @@ TRANSLATIONS = {
         "position": "Position",
         "positionTop": "Top of page",
         "positionComposer": "In chat box",
+        "leaveReview": "Enjoying it? Leave a review",
     },
     "es": {
         "extName": "Barra de uso para Claude",
@@ -69,7 +70,7 @@ TRANSLATIONS = {
         "resets": "se restablece en $TIME$",
         "contextTokenUsage": "Uso de contexto y tokens:",
         "pctOfContext": "$PCT$% de la ventana de contexto usado",
-        "ctxLength": "$TOKENS$ / 200k de longitud de contexto",
+        "ctxLength": "$TOKENS$ / $LIMIT$ de longitud de contexto",
         "totalTokens": "$TOKENS$ tokens usados en total",
         "estimateSuffix": " (estimación)",
         "contextAriaLabel": "Uso de la ventana de contexto",
@@ -82,6 +83,7 @@ TRANSLATIONS = {
         "position": "Posición",
         "positionTop": "Parte superior",
         "positionComposer": "En el cuadro de chat",
+        "leaveReview": "¿Te gusta? Deja una reseña",
     },
     "pt_BR": {
         "extName": "Barra de uso para Claude",
@@ -98,7 +100,7 @@ TRANSLATIONS = {
         "resets": "redefine em $TIME$",
         "contextTokenUsage": "Uso de contexto e tokens:",
         "pctOfContext": "$PCT$% da janela de contexto usada",
-        "ctxLength": "$TOKENS$ / 200k de contexto",
+        "ctxLength": "$TOKENS$ / $LIMIT$ de contexto",
         "totalTokens": "$TOKENS$ tokens usados no total",
         "estimateSuffix": " (estimativa)",
         "contextAriaLabel": "Uso da janela de contexto",
@@ -111,6 +113,7 @@ TRANSLATIONS = {
         "position": "Posição",
         "positionTop": "Topo da página",
         "positionComposer": "Na caixa de chat",
+        "leaveReview": "Gostou? Deixe uma avaliação",
     },
     "pt_PT": {
         "extName": "Barra de utilização para Claude",
@@ -127,7 +130,7 @@ TRANSLATIONS = {
         "resets": "reinicia em $TIME$",
         "contextTokenUsage": "Utilização de contexto e tokens:",
         "pctOfContext": "$PCT$% da janela de contexto utilizada",
-        "ctxLength": "$TOKENS$ / 200k de contexto",
+        "ctxLength": "$TOKENS$ / $LIMIT$ de contexto",
         "totalTokens": "$TOKENS$ tokens utilizados no total",
         "estimateSuffix": " (estimativa)",
         "contextAriaLabel": "Utilização da janela de contexto",
@@ -140,6 +143,7 @@ TRANSLATIONS = {
         "position": "Posição",
         "positionTop": "Topo da página",
         "positionComposer": "Na caixa de chat",
+        "leaveReview": "Gosta? Deixe uma avaliação",
     },
     "fr": {
         "extName": "Barre d'utilisation pour Claude",
@@ -156,7 +160,7 @@ TRANSLATIONS = {
         "resets": "réinit. dans $TIME$",
         "contextTokenUsage": "Contexte et tokens :",
         "pctOfContext": "$PCT$ % de la fenêtre de contexte utilisés",
-        "ctxLength": "$TOKENS$ / 200k de contexte",
+        "ctxLength": "$TOKENS$ / $LIMIT$ de contexte",
         "totalTokens": "$TOKENS$ tokens utilisés au total",
         "estimateSuffix": " (estimation)",
         "contextAriaLabel": "Utilisation de la fenêtre de contexte",
@@ -169,6 +173,7 @@ TRANSLATIONS = {
         "position": "Position",
         "positionTop": "Haut de la page",
         "positionComposer": "Dans la zone de chat",
+        "leaveReview": "Ça vous plaît ? Laissez un avis",
     },
     "de": {
         "extName": "Nutzungsleiste für Claude",
@@ -185,7 +190,7 @@ TRANSLATIONS = {
         "resets": "Reset in $TIME$",
         "contextTokenUsage": "Kontext- & Token-Nutzung:",
         "pctOfContext": "$PCT$ % des Kontextfensters belegt",
-        "ctxLength": "$TOKENS$ / 200k Kontextlänge",
+        "ctxLength": "$TOKENS$ / $LIMIT$ Kontextlänge",
         "totalTokens": "$TOKENS$ Tokens insgesamt",
         "estimateSuffix": " (Schätzung)",
         "contextAriaLabel": "Auslastung des Kontextfensters",
@@ -198,6 +203,7 @@ TRANSLATIONS = {
         "position": "Position",
         "positionTop": "Oben auf der Seite",
         "positionComposer": "Im Chatfeld",
+        "leaveReview": "Gefällt dir die Erweiterung? Schreib eine Bewertung",
     },
     "it": {
         "extName": "Barra di utilizzo per Claude",
@@ -214,7 +220,7 @@ TRANSLATIONS = {
         "resets": "si azzera tra $TIME$",
         "contextTokenUsage": "Utilizzo di contesto e token:",
         "pctOfContext": "$PCT$% della finestra di contesto utilizzato",
-        "ctxLength": "$TOKENS$ / 200k di contesto",
+        "ctxLength": "$TOKENS$ / $LIMIT$ di contesto",
         "totalTokens": "$TOKENS$ token usati in totale",
         "estimateSuffix": " (stima)",
         "contextAriaLabel": "Utilizzo della finestra di contesto",
@@ -227,6 +233,7 @@ TRANSLATIONS = {
         "position": "Posizione",
         "positionTop": "In alto",
         "positionComposer": "Nel riquadro della chat",
+        "leaveReview": "Ti piace? Lascia una recensione",
     },
     "ru": {
         "extName": "Панель использования для Claude",
@@ -243,7 +250,7 @@ TRANSLATIONS = {
         "resets": "сброс через $TIME$",
         "contextTokenUsage": "Контекст и токены:",
         "pctOfContext": "$PCT$% окна контекста использовано",
-        "ctxLength": "$TOKENS$ / 200k длины контекста",
+        "ctxLength": "$TOKENS$ / $LIMIT$ длины контекста",
         "totalTokens": "$TOKENS$ токенов всего",
         "estimateSuffix": " (оценка)",
         "contextAriaLabel": "Использование окна контекста",
@@ -256,6 +263,7 @@ TRANSLATIONS = {
         "position": "Расположение",
         "positionTop": "Вверху страницы",
         "positionComposer": "В поле чата",
+        "leaveReview": "Нравится? Оставьте отзыв",
     },
     "zh_CN": {
         "extName": "Claude 用量条",
@@ -272,7 +280,7 @@ TRANSLATIONS = {
         "resets": "$TIME$后重置",
         "contextTokenUsage": "上下文与 Token 用量：",
         "pctOfContext": "已使用上下文窗口的 $PCT$%",
-        "ctxLength": "$TOKENS$ / 200k 上下文长度",
+        "ctxLength": "$TOKENS$ / $LIMIT$ 上下文长度",
         "totalTokens": "共使用 $TOKENS$ 个 Token",
         "estimateSuffix": "（估算）",
         "contextAriaLabel": "上下文窗口用量",
@@ -285,6 +293,7 @@ TRANSLATIONS = {
         "position": "位置",
         "positionTop": "页面顶部",
         "positionComposer": "聊天框内",
+        "leaveReview": "喜欢吗？留个评价吧",
     },
     "zh_TW": {
         "extName": "Claude 用量列",
@@ -301,7 +310,7 @@ TRANSLATIONS = {
         "resets": "$TIME$後重設",
         "contextTokenUsage": "上下文與 Token 用量：",
         "pctOfContext": "已使用上下文視窗的 $PCT$%",
-        "ctxLength": "$TOKENS$ / 200k 上下文長度",
+        "ctxLength": "$TOKENS$ / $LIMIT$ 上下文長度",
         "totalTokens": "共使用 $TOKENS$ 個 Token",
         "estimateSuffix": "（估算）",
         "contextAriaLabel": "上下文視窗用量",
@@ -314,6 +323,7 @@ TRANSLATIONS = {
         "position": "位置",
         "positionTop": "頁面頂部",
         "positionComposer": "聊天框內",
+        "leaveReview": "喜歡嗎？留個評價吧",
     },
     "ja": {
         "extName": "Claude 使用量バー",
@@ -330,7 +340,7 @@ TRANSLATIONS = {
         "resets": "$TIME$後にリセット",
         "contextTokenUsage": "コンテキストとトークン使用量：",
         "pctOfContext": "コンテキストウィンドウの $PCT$% を使用中",
-        "ctxLength": "$TOKENS$ / 200k コンテキスト長",
+        "ctxLength": "$TOKENS$ / $LIMIT$ コンテキスト長",
         "totalTokens": "合計 $TOKENS$ トークン使用",
         "estimateSuffix": "（推定）",
         "contextAriaLabel": "コンテキストウィンドウ使用量",
@@ -343,6 +353,7 @@ TRANSLATIONS = {
         "position": "表示位置",
         "positionTop": "ページ上部",
         "positionComposer": "チャット欄内",
+        "leaveReview": "気に入ったらレビューをお願いします",
     },
     "ko": {
         "extName": "Claude 사용량 바",
@@ -359,7 +370,7 @@ TRANSLATIONS = {
         "resets": "$TIME$ 후 초기화",
         "contextTokenUsage": "컨텍스트 및 토큰 사용량:",
         "pctOfContext": "컨텍스트 창의 $PCT$% 사용 중",
-        "ctxLength": "$TOKENS$ / 200k 컨텍스트 길이",
+        "ctxLength": "$TOKENS$ / $LIMIT$ 컨텍스트 길이",
         "totalTokens": "총 $TOKENS$ 토큰 사용",
         "estimateSuffix": " (추정)",
         "contextAriaLabel": "컨텍스트 창 사용량",
@@ -372,6 +383,7 @@ TRANSLATIONS = {
         "position": "위치",
         "positionTop": "페이지 상단",
         "positionComposer": "채팅창 안",
+        "leaveReview": "마음에 드시나요? 리뷰를 남겨주세요",
     },
     "hi": {
         "extName": "Claude के लिए उपयोग बार",
@@ -388,7 +400,7 @@ TRANSLATIONS = {
         "resets": "$TIME$ में रीसेट",
         "contextTokenUsage": "कॉन्टेक्स्ट और टोकन उपयोग:",
         "pctOfContext": "कॉन्टेक्स्ट विंडो का $PCT$% उपयोग हुआ",
-        "ctxLength": "$TOKENS$ / 200k कॉन्टेक्स्ट लंबाई",
+        "ctxLength": "$TOKENS$ / $LIMIT$ कॉन्टेक्स्ट लंबाई",
         "totalTokens": "कुल $TOKENS$ टोकन उपयोग हुए",
         "estimateSuffix": " (अनुमान)",
         "contextAriaLabel": "कॉन्टेक्स्ट विंडो उपयोग",
@@ -401,6 +413,7 @@ TRANSLATIONS = {
         "position": "स्थिति",
         "positionTop": "पेज के ऊपर",
         "positionComposer": "चैट बॉक्स में",
+        "leaveReview": "पसंद आया? समीक्षा लिखें",
     },
     "tr": {
         "extName": "Claude için Kullanım Çubuğu",
@@ -417,7 +430,7 @@ TRANSLATIONS = {
         "resets": "$TIME$ içinde sıfırlanır",
         "contextTokenUsage": "Bağlam ve token kullanımı:",
         "pctOfContext": "Bağlam penceresinin %$PCT$ kadarı kullanıldı",
-        "ctxLength": "$TOKENS$ / 200k bağlam uzunluğu",
+        "ctxLength": "$TOKENS$ / $LIMIT$ bağlam uzunluğu",
         "totalTokens": "Toplam $TOKENS$ token kullanıldı",
         "estimateSuffix": " (tahmini)",
         "contextAriaLabel": "Bağlam penceresi kullanımı",
@@ -430,6 +443,7 @@ TRANSLATIONS = {
         "position": "Konum",
         "positionTop": "Sayfanın üstü",
         "positionComposer": "Sohbet kutusunda",
+        "leaveReview": "Beğendiniz mi? Yorum bırakın",
     },
 }
 
@@ -448,9 +462,10 @@ def main():
             errors.append(f"{locale}: extDesc over 132 chars ({len(strings['extDesc'])})")
         if len(strings.get("extName", "")) > 45:
             errors.append(f"{locale}: extName over 45 chars ({len(strings['extName'])})")
-        for key, name in PLACEHOLDER_KEYS.items():
-            if f"${name.upper()}$" not in strings.get(key, ""):
-                errors.append(f"{locale}: {key} missing ${name.upper()}$ placeholder")
+        for key, names in PLACEHOLDER_KEYS.items():
+            for name in names:
+                if f"${name.upper()}$" not in strings.get(key, ""):
+                    errors.append(f"{locale}: {key} missing ${name.upper()}$ placeholder")
     if errors:
         print("\n".join(errors), file=sys.stderr)
         sys.exit(1)
@@ -460,8 +475,10 @@ def main():
         for key, message in strings.items():
             entry = {"message": message}
             if key in PLACEHOLDER_KEYS:
-                name = PLACEHOLDER_KEYS[key]
-                entry["placeholders"] = {name: {"content": "$1"}}
+                entry["placeholders"] = {
+                    name: {"content": f"${i}"}
+                    for i, name in enumerate(PLACEHOLDER_KEYS[key], start=1)
+                }
             out[key] = entry
         dest = ROOT / "_locales" / locale / "messages.json"
         dest.parent.mkdir(parents=True, exist_ok=True)

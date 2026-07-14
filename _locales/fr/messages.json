@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k de contexte",
+    "message": "$TOKENS$ / $LIMIT$ de contexte",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -124,5 +127,8 @@
   },
   "positionComposer": {
     "message": "Dans la zone de chat"
+  },
+  "leaveReview": {
+    "message": "Ça vous plaît ? Laissez un avis"
   }
 }

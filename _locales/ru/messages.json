@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k длины контекста",
+    "message": "$TOKENS$ / $LIMIT$ длины контекста",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -124,5 +127,8 @@
   },
   "positionComposer": {
     "message": "В поле чата"
+  },
+  "leaveReview": {
+    "message": "Нравится? Оставьте отзыв"
   }
 }

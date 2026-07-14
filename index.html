@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usage Bar for Claude — see your Claude usage limits, token counter & context window on claude.ai</title>
+  <meta name="description" content="Usage Bar for Claude is a free, open-source Chrome extension that shows Claude plan usage limits (5-hour limit, weekly limit), a live token counter for the context window, and a prompt-cache countdown directly on claude.ai.">
+  <link rel="canonical" href="https://disi910.github.io/claude-usage-bar/">
+  <meta property="og:title" content="Usage Bar for Claude — Claude usage limits & token counter">
+  <meta property="og:description" content="Free Chrome extension: see your Claude 5-hour limit, weekly limit, context-window token counter and prompt-cache timer directly on claude.ai. No analytics, no servers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://disi910.github.io/claude-usage-bar/">
+  <meta property="og:image" content="https://disi910.github.io/claude-usage-bar/screenshots/01-home-1280.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Usage Bar for Claude",
+    "operatingSystem": "Chrome",
+    "applicationCategory": "BrowserApplication",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "ratingCount": "1" },
+    "description": "A free, open-source Chrome extension that shows Claude plan usage limits (5-hour limit, weekly limit, extra credits), a live token counter for the context window, and a prompt-cache countdown directly on claude.ai.",
+    "url": "https://disi910.github.io/claude-usage-bar/",
+    "installUrl": "https://chromewebstore.google.com/detail/usage-bar-for-claude/imblbfhdbdecholhjbagcjahdkhidneb",
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "Didrik Sivertsen" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I see my Claude usage limits?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Install Usage Bar for Claude, a free Chrome extension, and open claude.ai. It shows your 5-hour limit usage as a percentage with a reset countdown, and a hover panel with your weekly all-models limit, extra credits and Routines usage — the same numbers as Claude's Settings → Usage page, always visible." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I check how much of my Claude 5-hour limit is left?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The extension's main bar shows the percent of the rolling 5-hour limit used with a live 'resets in' countdown, and turns red at 100% so you see it before Claude starts declining messages." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Claude have a token counter?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Claude.ai shows limited token information natively. Usage Bar for Claude adds a persistent context-window donut: hover it to see estimated tokens used, context length consumed (for example 34k / 200k), and total tokens across the conversation." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is Usage Bar for Claude private?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. It makes only same-origin requests to claude.ai using your existing session. No analytics, no telemetry, no third-party servers. Conversation text is processed in memory only to estimate tokens and is never stored or transmitted." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is Usage Bar for Claude free?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — free and open source under the MIT license. Install it from the Chrome Web Store or load it from source on GitHub." }
+      }
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      --coral: #C96442;
+      --fg: #1F1B14;
+      --muted: #6E6658;
+      --bg: #F5F4EE;
+      --surface: #FFFFFF;
+      --border: #E8E6DC;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --coral: #D97757;
+        --fg: #F0EDE5;
+        --muted: #B8B0A2;
+        --bg: #2C2A26;
+        --surface: #3A3631;
+        --border: #4A453E;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 24px 24px;
+      color: var(--fg);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+    h1 { font-size: 34px; line-height: 1.2; margin: 16px 0 8px; }
+    h2 { font-size: 22px; margin-top: 40px; }
+    h3 { font-size: 16px; margin-bottom: 4px; }
+    a { color: var(--coral); }
+    .tagline { font-size: 18px; color: var(--muted); margin-top: 0; }
+    .cta {
+      display: inline-block;
+      margin: 18px 0;
+      padding: 12px 22px;
+      background: var(--coral);
+      color: #fff;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .cta:hover { filter: brightness(1.07); }
+    .meta { font-size: 14px; color: var(--muted); }
+    img.shot {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin: 12px 0;
+    }
+    .facts {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px 20px;
+      margin: 24px 0;
+    }
+    footer {
+      margin-top: 56px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <img src="icon128.png" width="56" height="56" alt="Usage Bar for Claude icon">
+  <h1>Usage Bar for Claude</h1>
+  <p class="tagline">See your Claude usage limits, a live token counter and the prompt-cache timer — directly on claude.ai.</p>
+
+  <p><strong>Usage Bar for Claude is a free, open-source Chrome extension that displays your Claude plan usage
+  (5-hour limit, weekly limit, extra credits), how much of the context window your conversation
+  has used, and a prompt-cache countdown, as a compact bar on claude.ai.</strong> It reads the same
+  usage data as Claude's own settings page, entirely inside your browser — no account, no analytics,
+  no external servers.</p>
+
+  <a class="cta" href="https://chromewebstore.google.com/detail/usage-bar-for-claude/imblbfhdbdecholhjbagcjahdkhidneb">Add to Chrome — it's free</a>
+  <p class="meta">14 languages · MIT licensed · <a href="https://github.com/disi910/claude-usage-bar">Source on GitHub</a> · Not affiliated with Anthropic</p>
+
+  <img class="shot" src="screenshots/01-home-1280.png" alt="Usage Bar for Claude showing the plan usage hover panel on claude.ai">
+  <img class="shot" src="screenshots/03-closeup-1280.png" alt="Close-up of the usage bar inside the claude.ai chat box with context-window donut and cache timer">
+
+  <div class="facts">
+    <p><strong>What it shows:</strong></p>
+    <ul>
+      <li><strong>5-hour limit</strong> — percent used and time until reset, always visible.</li>
+      <li><strong>Weekly · all models</strong>, <strong>extra credits</strong> and <strong>Routines</strong> on hover.</li>
+      <li><strong>Context-window token counter</strong> — estimated tokens used out of the 200k window.</li>
+      <li><strong>Prompt-cache countdown</strong> — know when a follow-up still hits the ~90% cheaper cache.</li>
+    </ul>
+  </div>
+
+  <h2>Frequently asked questions</h2>
+
+  <h3>How do I see my Claude usage limits?</h3>
+  <p>Install Usage Bar for Claude and open claude.ai. The bar shows your 5-hour limit usage as a
+  percentage with a reset countdown; hovering reveals the weekly all-models limit, extra credits and
+  Routines — the same numbers as Settings → Usage, without leaving the conversation.</p>
+
+  <h3>How do I check how much of my Claude 5-hour limit is left?</h3>
+  <p>The main bar is exactly that: percent of the rolling 5-hour limit used with a live
+  “resets in …” countdown. At 100% the bar turns red, so you see it before Claude starts
+  declining messages.</p>
+
+  <h3>Does Claude have a token counter?</h3>
+  <p>Claude.ai shows limited token information natively. Usage Bar for Claude adds a persistent
+  context-window donut: hover it for estimated tokens used, context length consumed
+  (e.g. 34k / 200k), and total tokens across the conversation, including edited branches.</p>
+
+  <h3>Is it private?</h3>
+  <p>Yes. Only same-origin requests to claude.ai with your existing session. No analytics, no
+  telemetry, no third-party servers; conversation text is processed in memory only, never stored
+  or transmitted. Read the <a href="privacy-policy.html">privacy policy</a>.</p>
+
+  <h3>Which plans does it work with?</h3>
+  <p>It displays whatever limit rows Claude's usage API returns for your account — Pro, Max, Team
+  or free. Rows your plan doesn't have simply show as “—”.</p>
+
+  <footer>
+    <a href="https://github.com/disi910/claude-usage-bar">GitHub</a> ·
+    <a href="privacy-policy.html">Privacy policy</a> ·
+    <a href="https://chromewebstore.google.com/detail/usage-bar-for-claude/imblbfhdbdecholhjbagcjahdkhidneb">Chrome Web Store</a><br>
+    Usage Bar for Claude is an independent open-source project and is not affiliated with Anthropic.
+  </footer>
+</body>
+</html>
