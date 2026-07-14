@@ -1,0 +1,128 @@
+{
+  "extName": {
+    "message": "Nutzungsleiste für Claude"
+  },
+  "extDesc": {
+    "message": "Plan-Nutzung, Kontextfenster und Prompt-Cache-Countdown direkt auf claude.ai – als Leiste oben oder im Chatfeld."
+  },
+  "planUsage": {
+    "message": "Plan-Nutzung"
+  },
+  "fiveHourLimit": {
+    "message": "5-Stunden-Limit"
+  },
+  "weeklyAllModels": {
+    "message": "Wöchentlich · alle Modelle"
+  },
+  "extraCredits": {
+    "message": "Extra-Guthaben"
+  },
+  "routines": {
+    "message": "Routinen"
+  },
+  "loading": {
+    "message": "lädt…"
+  },
+  "noData": {
+    "message": "keine Daten"
+  },
+  "now": {
+    "message": "jetzt"
+  },
+  "resetsIn": {
+    "message": "Reset in $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "resets": {
+    "message": "Reset in $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "contextTokenUsage": {
+    "message": "Kontext- & Token-Nutzung:"
+  },
+  "pctOfContext": {
+    "message": "$PCT$ % des Kontextfensters belegt",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "ctxLength": {
+    "message": "$TOKENS$ / 200k Kontextlänge",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalTokens": {
+    "message": "$TOKENS$ Tokens insgesamt",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "estimateSuffix": {
+    "message": " (Schätzung)"
+  },
+  "contextAriaLabel": {
+    "message": "Auslastung des Kontextfensters"
+  },
+  "cacheExpiresIn": {
+    "message": "Prompt-Cache läuft in $TIME$ ab",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheSavings": {
+    "message": "Gecachte Tokens sparen ~90 % der Eingabekosten"
+  },
+  "unitDays": {
+    "message": "$N$T",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitHours": {
+    "message": "$N$h",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitMinutes": {
+    "message": "$N$m",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "showBar": {
+    "message": "Nutzungsleiste anzeigen"
+  },
+  "position": {
+    "message": "Position"
+  },
+  "positionTop": {
+    "message": "Oben auf der Seite"
+  },
+  "positionComposer": {
+    "message": "Im Chatfeld"
+  }
+}

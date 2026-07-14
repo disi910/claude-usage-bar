@@ -9,3 +9,6 @@ claudeusage*.png
 screenshots.py
 STORE_DESCRIPTION.md
 store-assets/
+
+# Build artifacts
+*.zip

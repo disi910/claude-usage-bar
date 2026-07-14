@@ -1,0 +1,128 @@
+{
+  "extName": {
+    "message": "Claude 사용량 바"
+  },
+  "extDesc": {
+    "message": "claude.ai에서 플랜 사용량, 컨텍스트 창, 프롬프트 캐시 타이머를 확인하세요. 페이지 상단 또는 채팅창에 표시됩니다."
+  },
+  "planUsage": {
+    "message": "플랜 사용량"
+  },
+  "fiveHourLimit": {
+    "message": "5시간 한도"
+  },
+  "weeklyAllModels": {
+    "message": "주간 · 모든 모델"
+  },
+  "extraCredits": {
+    "message": "추가 크레딧"
+  },
+  "routines": {
+    "message": "루틴"
+  },
+  "loading": {
+    "message": "불러오는 중…"
+  },
+  "noData": {
+    "message": "데이터 없음"
+  },
+  "now": {
+    "message": "지금"
+  },
+  "resetsIn": {
+    "message": "$TIME$ 후 초기화",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "resets": {
+    "message": "$TIME$ 후 초기화",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "contextTokenUsage": {
+    "message": "컨텍스트 및 토큰 사용량:"
+  },
+  "pctOfContext": {
+    "message": "컨텍스트 창의 $PCT$% 사용 중",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "ctxLength": {
+    "message": "$TOKENS$ / 200k 컨텍스트 길이",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalTokens": {
+    "message": "총 $TOKENS$ 토큰 사용",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "estimateSuffix": {
+    "message": " (추정)"
+  },
+  "contextAriaLabel": {
+    "message": "컨텍스트 창 사용량"
+  },
+  "cacheExpiresIn": {
+    "message": "프롬프트 캐시가 $TIME$ 후 만료됩니다",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheSavings": {
+    "message": "캐시된 토큰으로 입력 비용 약 90% 절감"
+  },
+  "unitDays": {
+    "message": "$N$일",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitHours": {
+    "message": "$N$시간",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitMinutes": {
+    "message": "$N$분",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "showBar": {
+    "message": "사용량 바 표시"
+  },
+  "position": {
+    "message": "위치"
+  },
+  "positionTop": {
+    "message": "페이지 상단"
+  },
+  "positionComposer": {
+    "message": "채팅창 안"
+  }
+}

@@ -9,10 +9,18 @@ Not affiliated with Anthropic.
 
 ## What you get
 
-- A composer-anchored bar that mirrors Claude's coral palette and dark/light themes.
-- A hover panel with four rows: 5-hour limit, Weekly · all models, Weekly · Claude Opus, Routines.
+- A usage bar that mirrors Claude's coral palette and dark/light themes — pinned to the top of the page, or rendered as a slim line inside the chat box itself. Pick the placement in the extension popup.
+- A hover panel with four rows: 5-hour limit, Weekly · all models, Extra credits, Routines.
 - A circular indicator that estimates how much of the 200k context window the current chat is using.
 - A small hourglass next to the bar that counts down a 5-minute prompt-cache TTL after each assistant turn.
+- 14 languages: English, Español, Português (BR/PT), Français, Deutsch, Italiano, Русский, 简体中文, 繁體中文, 日本語, 한국어, हिन्दी, Türkçe. The UI follows your browser language automatically.
+
+## Settings
+
+Click the toolbar icon to open the popup:
+
+- **Show usage bar** — toggle the whole widget on or off.
+- **Position** — *Top of page* (floating overlay) or *In chat box* (compact bar inside the composer's toolbar row). If the chat box can't be found on a page, the bar falls back to the top placement.
 
 ## Install
 
@@ -48,17 +56,23 @@ Only same-origin Claude.ai calls. The extension stores sanitized usage metadata 
 
 ## Contributing
 
-Pull requests welcome. Open an issue first for anything bigger than a tweak — Firefox port, org switcher, settings page are all reasonable next steps.
+Pull requests welcome. Open an issue first for anything bigger than a tweak — Firefox port and an org switcher are reasonable next steps.
+
+To add or change a translation, edit `scripts/build_locales.py` and re-run it; it regenerates every `_locales/<locale>/messages.json`.
 
 ## Project layout
 
 ```
-manifest.json         extension config
-content.js            composer mount + observers + rendering
-background.js         toolbar-icon toggle
-styles.css            bar, panel, donut, hourglass styling
-icon{16,48,128}.png   toolbar and store icons
-privacy-policy.html   served via GitHub Pages, used in the store listing
+manifest.json             extension config (localized via _locales)
+content.js                bar mount (top overlay or in-composer) + observers + rendering
+background.js             seeds default settings on install
+popup.html/css/js         settings popup (show/hide, position)
+styles.css                bar, panel, donut, hourglass, inline-mode styling
+_locales/                 generated translations (14 languages)
+scripts/build_locales.py  translation source of truth — regenerates _locales/
+store-assets/descriptions translated Chrome Web Store listings to paste in the dashboard
+icon{16,48,128}.png       toolbar and store icons
+privacy-policy.html       served via GitHub Pages, used in the store listing
 ```
 
 ## License

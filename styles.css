@@ -303,3 +303,66 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* inline (in-chat-box) placement */
+
+#claude-usage-bar.cub-inline {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  flex: 1 1 auto;
+  min-width: 120px;
+  max-width: 420px;
+  align-self: center;
+  margin: 0 12px;
+  gap: 8px;
+  z-index: 1;
+}
+
+#claude-usage-bar.cub-inline > .cub-pct {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--cub-fg);
+  white-space: nowrap;
+}
+
+#claude-usage-bar.cub-inline .cub-bar {
+  height: 4px;
+  border-radius: 2px;
+  border: none;
+  background: var(--cub-bg-track);
+}
+
+/* Taller invisible hit area so the 4px line is easy to hover */
+#claude-usage-bar.cub-inline .cub-bar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -10px;
+  bottom: -10px;
+  pointer-events: auto;
+}
+
+#claude-usage-bar.cub-inline .cub-fill {
+  border-radius: 2px;
+  opacity: 1;
+}
+
+#claude-usage-bar.cub-inline .cub-donut svg {
+  width: 20px;
+  height: 20px;
+}
+
+#claude-usage-bar.cub-inline .cub-donut-pct {
+  min-width: 0;
+}
+
+/* The composer box clips overflow, so floating layers escape it via
+   position: fixed; JS anchors them to their trigger on hover. */
+#claude-usage-bar.cub-inline .cub-panel,
+#claude-usage-bar.cub-inline .cub-tooltip {
+  position: fixed;
+  z-index: 99999;
+}
