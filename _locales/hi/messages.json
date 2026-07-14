@@ -1,0 +1,128 @@
+{
+  "extName": {
+    "message": "Claude के लिए उपयोग बार"
+  },
+  "extDesc": {
+    "message": "claude.ai पर प्लान उपयोग, कॉन्टेक्स्ट विंडो और प्रॉम्प्ट-कैश काउंटडाउन देखें — पेज के ऊपर या चैट बॉक्स में।"
+  },
+  "planUsage": {
+    "message": "प्लान उपयोग"
+  },
+  "fiveHourLimit": {
+    "message": "5 घंटे की सीमा"
+  },
+  "weeklyAllModels": {
+    "message": "साप्ताहिक · सभी मॉडल"
+  },
+  "extraCredits": {
+    "message": "अतिरिक्त क्रेडिट"
+  },
+  "routines": {
+    "message": "रूटीन"
+  },
+  "loading": {
+    "message": "लोड हो रहा है…"
+  },
+  "noData": {
+    "message": "कोई डेटा नहीं"
+  },
+  "now": {
+    "message": "अभी"
+  },
+  "resetsIn": {
+    "message": "$TIME$ में रीसेट",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "resets": {
+    "message": "$TIME$ में रीसेट",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "contextTokenUsage": {
+    "message": "कॉन्टेक्स्ट और टोकन उपयोग:"
+  },
+  "pctOfContext": {
+    "message": "कॉन्टेक्स्ट विंडो का $PCT$% उपयोग हुआ",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "ctxLength": {
+    "message": "$TOKENS$ / 200k कॉन्टेक्स्ट लंबाई",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalTokens": {
+    "message": "कुल $TOKENS$ टोकन उपयोग हुए",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "estimateSuffix": {
+    "message": " (अनुमान)"
+  },
+  "contextAriaLabel": {
+    "message": "कॉन्टेक्स्ट विंडो उपयोग"
+  },
+  "cacheExpiresIn": {
+    "message": "प्रॉम्प्ट कैश $TIME$ में समाप्त होगा",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheSavings": {
+    "message": "कैश किए गए टोकन इनपुट लागत का ~90% बचाते हैं"
+  },
+  "unitDays": {
+    "message": "$N$ दिन",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitHours": {
+    "message": "$N$ घं",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitMinutes": {
+    "message": "$N$ मि",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "showBar": {
+    "message": "उपयोग बार दिखाएँ"
+  },
+  "position": {
+    "message": "स्थिति"
+  },
+  "positionTop": {
+    "message": "पेज के ऊपर"
+  },
+  "positionComposer": {
+    "message": "चैट बॉक्स में"
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "extName": {
+    "message": "Claude için Kullanım Çubuğu"
+  },
+  "extDesc": {
+    "message": "Plan kullanımı, bağlam penceresi ve prompt önbelleği geri sayımı claude.ai'de — üstte veya sohbet kutusunda."
+  },
+  "planUsage": {
+    "message": "Plan kullanımı"
+  },
+  "fiveHourLimit": {
+    "message": "5 saatlik limit"
+  },
+  "weeklyAllModels": {
+    "message": "Haftalık · tüm modeller"
+  },
+  "extraCredits": {
+    "message": "Ekstra krediler"
+  },
+  "routines": {
+    "message": "Rutinler"
+  },
+  "loading": {
+    "message": "yükleniyor…"
+  },
+  "noData": {
+    "message": "veri yok"
+  },
+  "now": {
+    "message": "şimdi"
+  },
+  "resetsIn": {
+    "message": "$TIME$ içinde sıfırlanır",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "resets": {
+    "message": "$TIME$ içinde sıfırlanır",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "contextTokenUsage": {
+    "message": "Bağlam ve token kullanımı:"
+  },
+  "pctOfContext": {
+    "message": "Bağlam penceresinin %$PCT$ kadarı kullanıldı",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "ctxLength": {
+    "message": "$TOKENS$ / 200k bağlam uzunluğu",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalTokens": {
+    "message": "Toplam $TOKENS$ token kullanıldı",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "estimateSuffix": {
+    "message": " (tahmini)"
+  },
+  "contextAriaLabel": {
+    "message": "Bağlam penceresi kullanımı"
+  },
+  "cacheExpiresIn": {
+    "message": "Prompt önbelleği $TIME$ içinde sona eriyor",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheSavings": {
+    "message": "Önbelleğe alınan tokenlar girdi maliyetinin ~%90'ını azaltır"
+  },
+  "unitDays": {
+    "message": "$N$g",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitHours": {
+    "message": "$N$s",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitMinutes": {
+    "message": "$N$dk",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "showBar": {
+    "message": "Kullanım çubuğunu göster"
+  },
+  "position": {
+    "message": "Konum"
+  },
+  "positionTop": {
+    "message": "Sayfanın üstü"
+  },
+  "positionComposer": {
+    "message": "Sohbet kutusunda"
+  }
+}

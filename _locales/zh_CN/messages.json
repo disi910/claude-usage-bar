@@ -1,0 +1,128 @@
+{
+  "extName": {
+    "message": "Claude 用量条"
+  },
+  "extDesc": {
+    "message": "在 claude.ai 直接查看套餐用量、上下文窗口和提示缓存倒计时——显示在页面顶部或聊天框内。"
+  },
+  "planUsage": {
+    "message": "套餐用量"
+  },
+  "fiveHourLimit": {
+    "message": "5 小时限额"
+  },
+  "weeklyAllModels": {
+    "message": "每周 · 全部模型"
+  },
+  "extraCredits": {
+    "message": "额外额度"
+  },
+  "routines": {
+    "message": "例行任务"
+  },
+  "loading": {
+    "message": "加载中…"
+  },
+  "noData": {
+    "message": "暂无数据"
+  },
+  "now": {
+    "message": "现在"
+  },
+  "resetsIn": {
+    "message": "$TIME$后重置",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "resets": {
+    "message": "$TIME$后重置",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "contextTokenUsage": {
+    "message": "上下文与 Token 用量："
+  },
+  "pctOfContext": {
+    "message": "已使用上下文窗口的 $PCT$%",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "ctxLength": {
+    "message": "$TOKENS$ / 200k 上下文长度",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalTokens": {
+    "message": "共使用 $TOKENS$ 个 Token",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "estimateSuffix": {
+    "message": "（估算）"
+  },
+  "contextAriaLabel": {
+    "message": "上下文窗口用量"
+  },
+  "cacheExpiresIn": {
+    "message": "提示缓存将于 $TIME$ 后过期",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheSavings": {
+    "message": "缓存的 Token 可节省约 90% 输入成本"
+  },
+  "unitDays": {
+    "message": "$N$ 天",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitHours": {
+    "message": "$N$ 小时",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitMinutes": {
+    "message": "$N$ 分钟",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "showBar": {
+    "message": "显示用量条"
+  },
+  "position": {
+    "message": "位置"
+  },
+  "positionTop": {
+    "message": "页面顶部"
+  },
+  "positionComposer": {
+    "message": "聊天框内"
+  }
+}

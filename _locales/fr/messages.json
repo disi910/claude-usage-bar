@@ -1,0 +1,128 @@
+{
+  "extName": {
+    "message": "Barre d'utilisation pour Claude"
+  },
+  "extDesc": {
+    "message": "Suivez l'utilisation de votre forfait Claude, le contexte et le cache de prompts sur claude.ai — en haut ou dans la zone de chat."
+  },
+  "planUsage": {
+    "message": "Utilisation du forfait"
+  },
+  "fiveHourLimit": {
+    "message": "Limite de 5 heures"
+  },
+  "weeklyAllModels": {
+    "message": "Hebdo · tous les modèles"
+  },
+  "extraCredits": {
+    "message": "Crédits supplémentaires"
+  },
+  "routines": {
+    "message": "Routines"
+  },
+  "loading": {
+    "message": "chargement…"
+  },
+  "noData": {
+    "message": "aucune donnée"
+  },
+  "now": {
+    "message": "maintenant"
+  },
+  "resetsIn": {
+    "message": "réinitialisation dans $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "resets": {
+    "message": "réinit. dans $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "contextTokenUsage": {
+    "message": "Contexte et tokens :"
+  },
+  "pctOfContext": {
+    "message": "$PCT$ % de la fenêtre de contexte utilisés",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "ctxLength": {
+    "message": "$TOKENS$ / 200k de contexte",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalTokens": {
+    "message": "$TOKENS$ tokens utilisés au total",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "estimateSuffix": {
+    "message": " (estimation)"
+  },
+  "contextAriaLabel": {
+    "message": "Utilisation de la fenêtre de contexte"
+  },
+  "cacheExpiresIn": {
+    "message": "Le cache de prompts expire dans $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheSavings": {
+    "message": "Les tokens en cache économisent ~90 % du coût d'entrée"
+  },
+  "unitDays": {
+    "message": "$N$j",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitHours": {
+    "message": "$N$h",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitMinutes": {
+    "message": "$N$min",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "showBar": {
+    "message": "Afficher la barre d'utilisation"
+  },
+  "position": {
+    "message": "Position"
+  },
+  "positionTop": {
+    "message": "Haut de la page"
+  },
+  "positionComposer": {
+    "message": "Dans la zone de chat"
+  }
+}

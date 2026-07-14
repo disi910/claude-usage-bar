@@ -1,0 +1,128 @@
+{
+  "extName": {
+    "message": "Панель использования для Claude"
+  },
+  "extDesc": {
+    "message": "Использование плана Claude, окно контекста и таймер кэша промптов на claude.ai — сверху или в поле чата."
+  },
+  "planUsage": {
+    "message": "Использование плана"
+  },
+  "fiveHourLimit": {
+    "message": "Лимит на 5 часов"
+  },
+  "weeklyAllModels": {
+    "message": "Неделя · все модели"
+  },
+  "extraCredits": {
+    "message": "Дополнительные кредиты"
+  },
+  "routines": {
+    "message": "Рутины"
+  },
+  "loading": {
+    "message": "загрузка…"
+  },
+  "noData": {
+    "message": "нет данных"
+  },
+  "now": {
+    "message": "сейчас"
+  },
+  "resetsIn": {
+    "message": "сброс через $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "resets": {
+    "message": "сброс через $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "contextTokenUsage": {
+    "message": "Контекст и токены:"
+  },
+  "pctOfContext": {
+    "message": "$PCT$% окна контекста использовано",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "ctxLength": {
+    "message": "$TOKENS$ / 200k длины контекста",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalTokens": {
+    "message": "$TOKENS$ токенов всего",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "estimateSuffix": {
+    "message": " (оценка)"
+  },
+  "contextAriaLabel": {
+    "message": "Использование окна контекста"
+  },
+  "cacheExpiresIn": {
+    "message": "Кэш промптов истечёт через $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheSavings": {
+    "message": "Кэшированные токены экономят ~90% стоимости ввода"
+  },
+  "unitDays": {
+    "message": "$N$ д",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitHours": {
+    "message": "$N$ ч",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitMinutes": {
+    "message": "$N$ мин",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "showBar": {
+    "message": "Показывать панель использования"
+  },
+  "position": {
+    "message": "Расположение"
+  },
+  "positionTop": {
+    "message": "Вверху страницы"
+  },
+  "positionComposer": {
+    "message": "В поле чата"
+  }
+}

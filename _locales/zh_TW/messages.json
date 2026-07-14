@@ -1,0 +1,128 @@
+{
+  "extName": {
+    "message": "Claude 用量列"
+  },
+  "extDesc": {
+    "message": "直接在 claude.ai 查看方案用量、上下文視窗與提示快取倒數——顯示於頁面頂部或聊天框內。"
+  },
+  "planUsage": {
+    "message": "方案用量"
+  },
+  "fiveHourLimit": {
+    "message": "5 小時限額"
+  },
+  "weeklyAllModels": {
+    "message": "每週 · 所有模型"
+  },
+  "extraCredits": {
+    "message": "額外額度"
+  },
+  "routines": {
+    "message": "例行任務"
+  },
+  "loading": {
+    "message": "載入中…"
+  },
+  "noData": {
+    "message": "無資料"
+  },
+  "now": {
+    "message": "現在"
+  },
+  "resetsIn": {
+    "message": "$TIME$後重設",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "resets": {
+    "message": "$TIME$後重設",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "contextTokenUsage": {
+    "message": "上下文與 Token 用量："
+  },
+  "pctOfContext": {
+    "message": "已使用上下文視窗的 $PCT$%",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "ctxLength": {
+    "message": "$TOKENS$ / 200k 上下文長度",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalTokens": {
+    "message": "共使用 $TOKENS$ 個 Token",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "estimateSuffix": {
+    "message": "（估算）"
+  },
+  "contextAriaLabel": {
+    "message": "上下文視窗用量"
+  },
+  "cacheExpiresIn": {
+    "message": "提示快取將於 $TIME$ 後到期",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheSavings": {
+    "message": "快取的 Token 可節省約 90% 輸入成本"
+  },
+  "unitDays": {
+    "message": "$N$ 天",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitHours": {
+    "message": "$N$ 小時",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitMinutes": {
+    "message": "$N$ 分鐘",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "showBar": {
+    "message": "顯示用量列"
+  },
+  "position": {
+    "message": "位置"
+  },
+  "positionTop": {
+    "message": "頁面頂部"
+  },
+  "positionComposer": {
+    "message": "聊天框內"
+  }
+}

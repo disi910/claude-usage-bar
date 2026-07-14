@@ -9,7 +9,20 @@
   let bar, fill, pctLabel, resetLabel, panel, donut, donutPct, donutTip, hourglass, hourglassLabel, hourglassTip;
   let lastUsage = null;
   let enabled = true;
+  let position = "top"; // "top" | "composer"
+  let mountedMode = null; // actual mode in the DOM ("top" | "inline")
   let cacheStartedAt = 0;
+
+  // ---------- i18n ----------
+
+  function t(key, subs) {
+    const msg = chrome.i18n.getMessage(key, subs);
+    return msg || key;
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  }
   let lastAssistantSignature = "";
   let composerObserver = null;
   let conversationObserver = null;
@@ -125,14 +138,14 @@
   // ---------- formatting ----------
 
   function fmtDuration(ms) {
-    if (ms <= 0) return "now";
+    if (ms <= 0) return t("now");
     const total = Math.floor(ms / 1000);
     const d = Math.floor(total / 86400);
     const h = Math.floor((total % 86400) / 3600);
     const m = Math.floor((total % 3600) / 60);
-    if (d > 0) return `${d}d`;
-    if (h > 0) return `${h}h`;
-    return `${m}m`;
+    if (d > 0) return t("unitDays", [String(d)]);
+    if (h > 0) return t("unitHours", [String(h)]);
+    return t("unitMinutes", [String(m)]);
   }
 
   function fmtClock(ms) {
@@ -153,8 +166,16 @@
 
   function rowPct(row) {
     if (!row) return null;
+    if (row.is_enabled === false) return null;
     const v = row.utilization ?? row.usage ?? row.percent;
-    return typeof v === "number" ? Math.max(0, Math.min(100, v)) : null;
+    if (typeof v === "number" && isFinite(v)) return Math.max(0, Math.min(100, v));
+    // Spending-shaped rows (extra credits): credits used vs. monthly limit.
+    const used = row.used_credits ?? row.current_spending ?? row.amount_spent ?? row.spent ?? row.used;
+    const limit = row.monthly_limit ?? row.budget_limit ?? row.spending_limit ?? row.budget ?? row.limit ?? row.total;
+    if (typeof used === "number" && typeof limit === "number" && isFinite(used) && limit > 0) {
+      return Math.max(0, Math.min(100, (used / limit) * 100));
+    }
+    return null;
   }
 
   function rowResetMs(row) {
@@ -165,40 +186,27 @@
 
   // ---------- DOM ----------
 
-  function buildRoot() {
-    const el = document.createElement("div");
-    el.id = "claude-usage-bar";
-    el.innerHTML = `
-      <div class="cub-bar" data-cub-bar>
-        <div class="cub-fill"></div>
-        <div class="cub-text">
-          <span class="cub-pct">— %</span>
-          <span class="cub-sep">·</span>
-          <span class="cub-reset">loading…</span>
-        </div>
+  function panelTemplate() {
+    const row = (name, label) => `
+          <div class="cub-panel-row" data-row="${name}">
+            <div class="cub-panel-row-head"><span class="cub-panel-label">${esc(label)}</span><span class="cub-panel-meta">—</span></div>
+            <div class="cub-panel-track"><div class="cub-panel-fill"></div></div>
+          </div>`;
+    return `
         <div class="cub-panel" role="tooltip">
           <div class="cub-panel-head">
-            <span>Plan usage</span>
+            <span>${esc(t("planUsage"))}</span>
           </div>
-          <div class="cub-panel-row" data-row="five_hour">
-            <div class="cub-panel-row-head"><span class="cub-panel-label">5-hour limit</span><span class="cub-panel-meta">—</span></div>
-            <div class="cub-panel-track"><div class="cub-panel-fill"></div></div>
-          </div>
-          <div class="cub-panel-row" data-row="weekly_all">
-            <div class="cub-panel-row-head"><span class="cub-panel-label">Weekly · all models</span><span class="cub-panel-meta">—</span></div>
-            <div class="cub-panel-track"><div class="cub-panel-fill"></div></div>
-          </div>
-          <div class="cub-panel-row" data-row="weekly_opus">
-            <div class="cub-panel-row-head"><span class="cub-panel-label">Weekly · Claude Opus</span><span class="cub-panel-meta">—</span></div>
-            <div class="cub-panel-track"><div class="cub-panel-fill"></div></div>
-          </div>
-          <div class="cub-panel-row" data-row="routines">
-            <div class="cub-panel-row-head"><span class="cub-panel-label">Routines</span><span class="cub-panel-meta">—</span></div>
-            <div class="cub-panel-track"><div class="cub-panel-fill"></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="cub-donut" data-cub-donut tabindex="0" aria-label="Context window usage">
+          ${row("five_hour", t("fiveHourLimit"))}
+          ${row("weekly_all", t("weeklyAllModels"))}
+          ${row("extra", t("extraCredits"))}
+          ${row("routines", t("routines"))}
+        </div>`;
+  }
+
+  function donutTemplate() {
+    return `
+      <div class="cub-donut" data-cub-donut tabindex="0" aria-label="${esc(t("contextAriaLabel"))}">
         <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
           <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
           <circle class="cub-donut-arc" cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="3"
@@ -207,41 +215,128 @@
         </svg>
         <span class="cub-donut-pct">0%</span>
         <div class="cub-tooltip" role="tooltip">
-          <div>Context &amp; token usage:</div>
-          <div data-tip="pct">0% of context window used</div>
-          <div data-tip="ctx">0 / 200k context length</div>
-          <div data-tip="total">0 total tokens used</div>
+          <div>${esc(t("contextTokenUsage"))}</div>
+          <div data-tip="pct">${esc(t("pctOfContext", ["0"]))}</div>
+          <div data-tip="ctx">${esc(t("ctxLength", ["0"]))}</div>
+          <div data-tip="total">${esc(t("totalTokens", ["0"]))}</div>
         </div>
-      </div>
+      </div>`;
+  }
+
+  function hourglassTemplate() {
+    return `
       <div class="cub-hourglass" data-cub-hourglass tabindex="0" hidden>
         <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
           <path fill="currentColor" d="M3 1.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1H12v2a4 4 0 0 1-1.534 3.147L9.05 8l1.416 .853A4 4 0 0 1 12 12v2h.5a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1H4v-2a4 4 0 0 1 1.534-3.147L6.95 8 5.534 7.147A4 4 0 0 1 4 4V2h-.5a.5.5 0 0 1-.5-.5z"></path>
         </svg>
         <span class="cub-hourglass-label">5:00</span>
         <div class="cub-tooltip" role="tooltip">
-          <div data-tip="cache">Prompt cache expires in 5:00</div>
-          <div>Cached tokens save ~90% input cost</div>
+          <div data-tip="cache">${esc(t("cacheExpiresIn", ["5:00"]))}</div>
+          <div>${esc(t("cacheSavings"))}</div>
         </div>
+      </div>`;
+  }
+
+  function buildRoot(mode) {
+    const el = document.createElement("div");
+    el.id = "claude-usage-bar";
+    if (mode === "inline") {
+      // Compact widget that sits inside the composer toolbar row:
+      // [pct] [thin line w/ hover panel] [donut] [hourglass]
+      el.classList.add("cub-inline");
+      el.innerHTML = `
+      <span class="cub-pct">— %</span>
+      <div class="cub-bar" data-cub-bar>
+        <div class="cub-fill"></div>
+        <span class="cub-reset" hidden></span>
+        ${panelTemplate()}
       </div>
+      ${donutTemplate()}
+      ${hourglassTemplate()}
     `;
+    } else {
+      el.innerHTML = `
+      <div class="cub-bar" data-cub-bar>
+        <div class="cub-fill"></div>
+        <div class="cub-text">
+          <span class="cub-pct">— %</span>
+          <span class="cub-sep">·</span>
+          <span class="cub-reset">${esc(t("loading"))}</span>
+        </div>
+        ${panelTemplate()}
+      </div>
+      ${donutTemplate()}
+      ${hourglassTemplate()}
+    `;
+    }
     return el;
   }
 
-  function findComposerRect() {
-    const editor =
+  function findComposerEditor() {
+    return (
       document.querySelector('[contenteditable="true"][role="textbox"]') ||
-      document.querySelector('[contenteditable="true"]');
+      document.querySelector('[contenteditable="true"]')
+    );
+  }
+
+  function findComposerRect() {
+    const editor = findComposerEditor();
     if (!editor) return null;
     return editor.getBoundingClientRect();
+  }
+
+  // Finds the composer's bottom toolbar row (the one with the "+" button and
+  // model picker). Claude.ai's DOM is undocumented, so we walk up from the
+  // editor and look for a sibling row below it that contains buttons.
+  function findComposerToolbar() {
+    const editor = findComposerEditor();
+    if (!editor) return null;
+    const eRect = editor.getBoundingClientRect();
+    if (eRect.height === 0) return null;
+    let container = editor.parentElement;
+    for (let hops = 0; container && hops < 8; hops++, container = container.parentElement) {
+      for (const child of container.children) {
+        if (child.contains(editor) || child === root) continue;
+        if (!child.querySelector("button")) continue;
+        const rect = child.getBoundingClientRect();
+        if (rect.height > 0 && rect.height < 80 && rect.top >= eRect.top) {
+          return child;
+        }
+      }
+    }
+    return null;
   }
 
   function mount() {
     if (!enabled) return;
     if (root && document.body.contains(root)) return;
 
-    root = buildRoot();
-    bindRefs();
+    if (position === "composer") {
+      const toolbar = findComposerToolbar();
+      if (toolbar) {
+        root = buildRoot("inline");
+        bindRefs();
+        mountedMode = "inline";
+        // Slot in after the leading button group (the "+" button) so the
+        // widget sits between it and the model picker, like the native row.
+        toolbar.insertBefore(root, toolbar.children[1] || null);
+        // The composer clips overflow, so panel/tooltips use position:fixed
+        // in inline mode and get anchored to their trigger on hover.
+        bar.addEventListener("mouseenter", () => anchorFloating(bar, panel));
+        donut.addEventListener("mouseenter", () => anchorFloating(donut, donutTip));
+        hourglass.addEventListener("mouseenter", () => anchorFloating(hourglass, hourglassTip));
+        renderUsage(lastUsage);
+        renderContext();
+        renderCache();
+        return;
+      }
+      // Composer not found (yet) — fall back to the top overlay. The
+      // composer observer upgrades us to inline once the toolbar appears.
+    }
 
+    root = buildRoot("top");
+    bindRefs();
+    mountedMode = "top";
     document.body.appendChild(root);
     syncPosition();
 
@@ -250,8 +345,16 @@
     renderCache();
   }
 
+  function anchorFloating(trigger, el) {
+    if (!el || mountedMode !== "inline") return;
+    const r = trigger.getBoundingClientRect();
+    el.style.left = `${r.left + r.width / 2}px`;
+    el.style.top = "auto";
+    el.style.bottom = `${window.innerHeight - r.top + 10}px`;
+  }
+
   function syncPosition() {
-    if (!root) return;
+    if (!root || mountedMode !== "top") return;
     const rect = findComposerRect();
     const composerWidth = rect && rect.width > 0 ? rect.width : 0;
     const composerCenterX = rect && rect.width > 0 ? rect.left + rect.width / 2 : window.innerWidth / 2;
@@ -267,6 +370,7 @@
   function unmount() {
     if (root && root.parentElement) root.parentElement.removeChild(root);
     root = null;
+    mountedMode = null;
   }
 
   function bindRefs() {
@@ -296,7 +400,7 @@
       return;
     }
     const parts = [`${Math.round(pct)}%`];
-    if (resetMs != null) parts.push(`resets ${fmtDuration(resetMs)}`);
+    if (resetMs != null) parts.push(t("resets", [fmtDuration(resetMs)]));
     meta.textContent = parts.join(" · ");
     fillEl.style.width = `${pct}%`;
   }
@@ -307,22 +411,22 @@
     const fhPct = rowPct(fh);
     if (fhPct == null) {
       pctLabel.textContent = "— %";
-      resetLabel.textContent = "no data";
+      resetLabel.textContent = t("noData");
       fill.style.width = "0%";
       bar.classList.remove("cub-full");
     } else {
       const resetMs = rowResetMs(fh);
       fill.style.width = `${fhPct}%`;
       pctLabel.textContent = `${Math.round(fhPct)} %`;
-      resetLabel.textContent = resetMs != null ? `resets in ${fmtDuration(resetMs)}` : "5-hour limit";
+      resetLabel.textContent = resetMs != null ? t("resetsIn", [fmtDuration(resetMs)]) : t("fiveHourLimit");
       bar.classList.toggle("cub-full", fhPct >= 100);
     }
 
     setRow("five_hour", fhPct, rowResetMs(fh));
     const weeklyAll = pickRow(data, "seven_day");
     setRow("weekly_all", rowPct(weeklyAll), rowResetMs(weeklyAll));
-    const weeklyOpus = pickRow(data, "seven_day_opus");
-    setRow("weekly_opus", rowPct(weeklyOpus), rowResetMs(weeklyOpus));
+    const extra = pickRow(data, "extra_usage", "extraUsage", "extra_credits", "extra", "overage");
+    setRow("extra", rowPct(extra), rowResetMs(extra));
     const routines = pickRow(data, "seven_day_omelette", "routines", "scheduled_tasks");
     setRow("routines", rowPct(routines), rowResetMs(routines));
   }
@@ -347,10 +451,10 @@
     if (arc) arc.setAttribute("stroke-dashoffset", String(circumference * (1 - pct / 100)));
     if (donutPct) donutPct.textContent = `${Math.round(pct)}%`;
     const tk = formatTokens(tokens);
-    const suffix = source === "estimate" ? " (estimate)" : "";
-    setTip(donutTip, "pct", `${Math.round(pct)}% of context window used${suffix}`);
-    setTip(donutTip, "ctx", `${tk} / 200k context length`);
-    setTip(donutTip, "total", `${tk} total tokens used${suffix}`);
+    const suffix = source === "estimate" ? t("estimateSuffix") : "";
+    setTip(donutTip, "pct", t("pctOfContext", [String(Math.round(pct))]) + suffix);
+    setTip(donutTip, "ctx", t("ctxLength", [tk]));
+    setTip(donutTip, "total", t("totalTokens", [tk]) + suffix);
   }
 
   function renderContext() {
@@ -390,7 +494,7 @@
     }
     hourglass.hidden = false;
     hourglassLabel.textContent = fmtClock(remaining);
-    setTip(hourglassTip, "cache", `Prompt cache expires in ${fmtClock(remaining)}`);
+    setTip(hourglassTip, "cache", t("cacheExpiresIn", [fmtClock(remaining)]));
   }
 
   // ---------- observers ----------
@@ -399,7 +503,10 @@
     if (conversationObserver) conversationObserver.disconnect();
     const target = document.querySelector("main") || document.body;
     let pending = null;
-    conversationObserver = new MutationObserver(() => {
+    conversationObserver = new MutationObserver((records) => {
+      // In composer mode our own widget lives inside <main>; ignore our own
+      // mutations or every render would re-trigger this observer forever.
+      if (root && records.every((r) => root.contains(r.target))) return;
       if (pending) cancelAnimationFrame(pending);
       pending = requestAnimationFrame(() => {
         renderContext();
@@ -429,8 +536,16 @@
       if (pending) return;
       pending = requestAnimationFrame(() => {
         pending = null;
-        if (!root || !document.body.contains(root)) mount();
-        else syncPosition();
+        if (!root || !document.body.contains(root)) {
+          mount();
+        } else if (position === "composer" && mountedMode === "top" && findComposerToolbar()) {
+          // We fell back to the top overlay before the composer existed —
+          // upgrade to the inline placement now that it does.
+          unmount();
+          mount();
+        } else {
+          syncPosition();
+        }
       });
     });
     composerObserver.observe(document.body, { childList: true, subtree: true });
@@ -450,8 +565,9 @@
   }
 
   async function start() {
-    const stored = await chrome.storage.local.get("enabled");
+    const stored = await chrome.storage.local.get(["enabled", "position"]);
     enabled = stored.enabled !== false;
+    position = stored.position === "composer" ? "composer" : "top";
 
     if (enabled) mount();
     tick();
@@ -467,10 +583,12 @@
     rafLoop();
 
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area !== "local" || !changes.enabled) return;
-      enabled = changes.enabled.newValue !== false;
+      if (area !== "local") return;
+      if (!changes.enabled && !changes.position) return;
+      if (changes.enabled) enabled = changes.enabled.newValue !== false;
+      if (changes.position) position = changes.position.newValue === "composer" ? "composer" : "top";
+      unmount();
       if (enabled) mount();
-      else unmount();
     });
   }
 

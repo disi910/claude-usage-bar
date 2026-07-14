@@ -1,15 +1,9 @@
-chrome.action.onClicked.addListener(async () => {
-  const { enabled = true } = await chrome.storage.local.get("enabled");
-  const next = !enabled;
-  await chrome.storage.local.set({ enabled: next });
-  chrome.action.setTitle({
-    title: next ? "Claude Usage Bar (click to hide)" : "Claude Usage Bar (hidden, click to show)",
-  });
-});
-
 chrome.runtime.onInstalled.addListener(async () => {
-  const { enabled } = await chrome.storage.local.get("enabled");
-  if (enabled === undefined) {
-    await chrome.storage.local.set({ enabled: true });
+  const { enabled, position } = await chrome.storage.local.get(["enabled", "position"]);
+  const defaults = {};
+  if (enabled === undefined) defaults.enabled = true;
+  if (position === undefined) defaults.position = "top";
+  if (Object.keys(defaults).length) {
+    await chrome.storage.local.set(defaults);
   }
 });

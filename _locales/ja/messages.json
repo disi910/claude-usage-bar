@@ -1,0 +1,128 @@
+{
+  "extName": {
+    "message": "Claude 使用量バー"
+  },
+  "extDesc": {
+    "message": "claude.ai上でプラン使用量・コンテキスト・プロンプトキャッシュの残り時間を表示。ページ上部またはチャット欄に配置できます。"
+  },
+  "planUsage": {
+    "message": "プラン使用量"
+  },
+  "fiveHourLimit": {
+    "message": "5時間の上限"
+  },
+  "weeklyAllModels": {
+    "message": "週間 · 全モデル"
+  },
+  "extraCredits": {
+    "message": "追加クレジット"
+  },
+  "routines": {
+    "message": "ルーティン"
+  },
+  "loading": {
+    "message": "読み込み中…"
+  },
+  "noData": {
+    "message": "データなし"
+  },
+  "now": {
+    "message": "今"
+  },
+  "resetsIn": {
+    "message": "$TIME$後にリセット",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "resets": {
+    "message": "$TIME$後にリセット",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "contextTokenUsage": {
+    "message": "コンテキストとトークン使用量："
+  },
+  "pctOfContext": {
+    "message": "コンテキストウィンドウの $PCT$% を使用中",
+    "placeholders": {
+      "pct": {
+        "content": "$1"
+      }
+    }
+  },
+  "ctxLength": {
+    "message": "$TOKENS$ / 200k コンテキスト長",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalTokens": {
+    "message": "合計 $TOKENS$ トークン使用",
+    "placeholders": {
+      "tokens": {
+        "content": "$1"
+      }
+    }
+  },
+  "estimateSuffix": {
+    "message": "（推定）"
+  },
+  "contextAriaLabel": {
+    "message": "コンテキストウィンドウ使用量"
+  },
+  "cacheExpiresIn": {
+    "message": "プロンプトキャッシュは $TIME$ 後に期限切れ",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheSavings": {
+    "message": "キャッシュ済みトークンで入力コストを約90%節約"
+  },
+  "unitDays": {
+    "message": "$N$日",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitHours": {
+    "message": "$N$時間",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "unitMinutes": {
+    "message": "$N$分",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "showBar": {
+    "message": "使用量バーを表示"
+  },
+  "position": {
+    "message": "表示位置"
+  },
+  "positionTop": {
+    "message": "ページ上部"
+  },
+  "positionComposer": {
+    "message": "チャット欄内"
+  }
+}

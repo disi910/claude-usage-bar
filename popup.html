@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icon48.png" width="20" height="20" alt="">
+    <h1 data-i18n="extName"></h1>
+  </header>
+
+  <label class="row toggle-row">
+    <span data-i18n="showBar"></span>
+    <span class="switch">
+      <input type="checkbox" id="enabled">
+      <span class="track"></span>
+    </span>
+  </label>
+
+  <div class="section-label" data-i18n="position"></div>
+
+  <div class="positions">
+    <label class="pos-card">
+      <input type="radio" name="position" value="top">
+      <svg viewBox="0 0 48 36" aria-hidden="true">
+        <rect x="1" y="1" width="46" height="34" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.35"></rect>
+        <rect x="8" y="5" width="32" height="4" rx="2" fill="var(--pop-coral)"></rect>
+        <rect x="8" y="24" width="32" height="7" rx="3.5" fill="none" stroke="currentColor" stroke-opacity="0.35"></rect>
+      </svg>
+      <span data-i18n="positionTop"></span>
+    </label>
+    <label class="pos-card">
+      <input type="radio" name="position" value="composer">
+      <svg viewBox="0 0 48 36" aria-hidden="true">
+        <rect x="1" y="1" width="46" height="34" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.35"></rect>
+        <rect x="8" y="20" width="32" height="11" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.35"></rect>
+        <rect x="11" y="26" width="18" height="2.5" rx="1.25" fill="var(--pop-coral)"></rect>
+        <circle cx="35" cy="27" r="2.5" fill="none" stroke="var(--pop-coral)" stroke-width="1.5"></circle>
+      </svg>
+      <span data-i18n="positionComposer"></span>
+    </label>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -75,15 +75,6 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-#claude-usage-bar .cub-bar::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  overflow: hidden;
-  z-index: 0;
-}
-
 #claude-usage-bar .cub-fill {
   position: absolute;
   top: 0;
@@ -141,11 +132,10 @@
 #claude-usage-bar.cub-flip .cub-panel {
   bottom: auto;
   top: calc(100% + 10px);
-  transform: translateX(-50%) translateY(-4px);
 }
 
 #claude-usage-bar .cub-bar:hover .cub-panel,
-#claude-usage-bar .cub-bar:focus-visible .cub-panel,
+#claude-usage-bar .cub-bar:focus-within .cub-panel,
 #claude-usage-bar .cub-panel:hover {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
@@ -216,24 +206,20 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px 4px 6px;
-  border-radius: 16px;
-  background: var(--cub-bg);
-  border: 1px solid var(--cub-border);
+  gap: 5px;
+  padding: 0 2px 0 4px;
   color: var(--cub-coral-deep);
   font-weight: 600;
   font-size: 12px;
   cursor: default;
-  transition: box-shadow 0.15s ease;
 }
 
 #claude-usage-bar .cub-donut::after,
 #claude-usage-bar .cub-hourglass::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  left: -6px;
+  right: -6px;
   bottom: 100%;
   height: 12px;
   pointer-events: auto;
@@ -243,10 +229,6 @@
 #claude-usage-bar.cub-flip .cub-hourglass::after {
   bottom: auto;
   top: 100%;
-}
-
-#claude-usage-bar .cub-donut:hover {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 #claude-usage-bar .cub-donut-arc {
@@ -265,21 +247,13 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 10px 4px 8px;
-  border-radius: 16px;
-  background: var(--cub-bg);
-  border: 1px solid var(--cub-border);
+  gap: 4px;
+  padding: 0 2px;
   color: var(--cub-coral-deep);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   font-size: 12px;
   cursor: default;
-  transition: box-shadow 0.15s ease;
-}
-
-#claude-usage-bar .cub-hourglass:hover {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 #claude-usage-bar .cub-hourglass[hidden] {
@@ -328,4 +302,67 @@
 #claude-usage-bar .cub-hourglass:hover .cub-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* inline (in-chat-box) placement */
+
+#claude-usage-bar.cub-inline {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  flex: 1 1 auto;
+  min-width: 120px;
+  max-width: 420px;
+  align-self: center;
+  margin: 0 12px;
+  gap: 8px;
+  z-index: 1;
+}
+
+#claude-usage-bar.cub-inline > .cub-pct {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--cub-fg);
+  white-space: nowrap;
+}
+
+#claude-usage-bar.cub-inline .cub-bar {
+  height: 4px;
+  border-radius: 2px;
+  border: none;
+  background: var(--cub-bg-track);
+}
+
+/* Taller invisible hit area so the 4px line is easy to hover */
+#claude-usage-bar.cub-inline .cub-bar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -10px;
+  bottom: -10px;
+  pointer-events: auto;
+}
+
+#claude-usage-bar.cub-inline .cub-fill {
+  border-radius: 2px;
+  opacity: 1;
+}
+
+#claude-usage-bar.cub-inline .cub-donut svg {
+  width: 20px;
+  height: 20px;
+}
+
+#claude-usage-bar.cub-inline .cub-donut-pct {
+  min-width: 0;
+}
+
+/* The composer box clips overflow, so floating layers escape it via
+   position: fixed; JS anchors them to their trigger on hover. */
+#claude-usage-bar.cub-inline .cub-panel,
+#claude-usage-bar.cub-inline .cub-tooltip {
+  position: fixed;
+  z-index: 99999;
 }
