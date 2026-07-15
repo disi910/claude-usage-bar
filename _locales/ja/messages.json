@@ -75,9 +75,6 @@
       }
     }
   },
-  "estimateSuffix": {
-    "message": "（推定）"
-  },
   "contextAriaLabel": {
     "message": "コンテキストウィンドウ使用量"
   },
@@ -130,5 +127,11 @@
   },
   "leaveReview": {
     "message": "気に入ったらレビューをお願いします"
+  },
+  "startNewChat": {
+    "message": "コンテキストがほぼ満杯です — 新しいチャットの開始をおすすめします"
+  },
+  "notUsed": {
+    "message": "0% · 未使用"
   }
 }

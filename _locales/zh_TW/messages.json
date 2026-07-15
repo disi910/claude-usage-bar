@@ -75,9 +75,6 @@
       }
     }
   },
-  "estimateSuffix": {
-    "message": "（估算）"
-  },
   "contextAriaLabel": {
     "message": "上下文視窗用量"
   },
@@ -130,5 +127,11 @@
   },
   "leaveReview": {
     "message": "喜歡嗎？留個評價吧"
+  },
+  "startNewChat": {
+    "message": "上下文即將用滿——建議開始新對話"
+  },
+  "notUsed": {
+    "message": "0% · 未使用"
   }
 }

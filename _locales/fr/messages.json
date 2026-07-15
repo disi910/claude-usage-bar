@@ -75,9 +75,6 @@
       }
     }
   },
-  "estimateSuffix": {
-    "message": " (estimation)"
-  },
   "contextAriaLabel": {
     "message": "Utilisation de la fenêtre de contexte"
   },
@@ -130,5 +127,11 @@
   },
   "leaveReview": {
     "message": "Ça vous plaît ? Laissez un avis"
+  },
+  "startNewChat": {
+    "message": "Contexte presque plein — pensez à démarrer une nouvelle discussion"
+  },
+  "notUsed": {
+    "message": "0 % · inutilisé"
   }
 }

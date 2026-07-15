@@ -75,9 +75,6 @@
       }
     }
   },
-  "estimateSuffix": {
-    "message": " (추정)"
-  },
   "contextAriaLabel": {
     "message": "컨텍스트 창 사용량"
   },
@@ -130,5 +127,11 @@
   },
   "leaveReview": {
     "message": "마음에 드시나요? 리뷰를 남겨주세요"
+  },
+  "startNewChat": {
+    "message": "컨텍스트가 거의 찼습니다 — 새 채팅을 시작하는 것이 좋습니다"
+  },
+  "notUsed": {
+    "message": "0% · 미사용"
   }
 }

@@ -75,9 +75,6 @@
       }
     }
   },
-  "estimateSuffix": {
-    "message": " (оценка)"
-  },
   "contextAriaLabel": {
     "message": "Использование окна контекста"
   },
@@ -130,5 +127,11 @@
   },
   "leaveReview": {
     "message": "Нравится? Оставьте отзыв"
+  },
+  "startNewChat": {
+    "message": "Контекст почти заполнен — лучше начать новый чат"
+  },
+  "notUsed": {
+    "message": "0% · не используется"
   }
 }

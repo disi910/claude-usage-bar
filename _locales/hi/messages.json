@@ -75,9 +75,6 @@
       }
     }
   },
-  "estimateSuffix": {
-    "message": " (अनुमान)"
-  },
   "contextAriaLabel": {
     "message": "कॉन्टेक्स्ट विंडो उपयोग"
   },
@@ -130,5 +127,11 @@
   },
   "leaveReview": {
     "message": "पसंद आया? समीक्षा लिखें"
+  },
+  "startNewChat": {
+    "message": "कॉन्टेक्स्ट लगभग भर गया है — नई चैट शुरू करने पर विचार करें"
+  },
+  "notUsed": {
+    "message": "0% · अप्रयुक्त"
   }
 }

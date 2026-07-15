@@ -75,9 +75,6 @@
       }
     }
   },
-  "estimateSuffix": {
-    "message": " (tahmini)"
-  },
   "contextAriaLabel": {
     "message": "Bağlam penceresi kullanımı"
   },
@@ -130,5 +127,11 @@
   },
   "leaveReview": {
     "message": "Beğendiniz mi? Yorum bırakın"
+  },
+  "startNewChat": {
+    "message": "Bağlam neredeyse dolu — yeni bir sohbet başlatmayı düşünün"
+  },
+  "notUsed": {
+    "message": "%0 · kullanılmadı"
   }
 }

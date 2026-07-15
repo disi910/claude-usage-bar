@@ -12,6 +12,10 @@
   const MSG_OVERHEAD_TOKENS = 6;
   const IMAGE_TOKENS = 1500;
 
+  // Context-pressure thresholds (% of window) for the donut's warning states.
+  const CTX_WARN_PCT = 70;
+  const CTX_CRIT_PCT = 90;
+
   let orgId = null;
   let root = null;
   let bar, fill, pctLabel, resetLabel, panel, donut, donutPct, donutTip, hourglass, hourglassLabel, hourglassTip;
@@ -234,7 +238,14 @@
     let t = cjk * TOKENS_PER_CJK_CHAR;
     const words = rest.match(/\S+/g) || [];
     for (const w of words) {
-      t += w.length <= 9 ? TOKENS_PER_WORD : w.length / LONG_WORD_CHARS;
+      if (/^\d+$/.test(w)) {
+        // Digit runs tokenize in small groups (~2-3 digits per token).
+        t += Math.max(1, w.length / 2.7);
+      } else if (w.length <= 9) {
+        t += TOKENS_PER_WORD;
+      } else {
+        t += w.length / LONG_WORD_CHARS;
+      }
     }
     return Math.round(t);
   }
@@ -321,8 +332,9 @@
         <div class="cub-tooltip" role="tooltip">
           <div>${esc(t("contextTokenUsage"))}</div>
           <div data-tip="pct">${esc(t("pctOfContext", ["0"]))}</div>
-          <div data-tip="ctx">${esc(t("ctxLength", ["0"]))}</div>
+          <div data-tip="ctx">${esc(t("ctxLength", ["0", "200k"]))}</div>
           <div data-tip="total">${esc(t("totalTokens", ["0"]))}</div>
+          <div class="cub-advice" data-tip="advice" hidden>${esc(t("startNewChat"))}</div>
         </div>
       </div>`;
   }
@@ -499,7 +511,9 @@
     const meta = row.querySelector(".cub-panel-meta");
     const fillEl = row.querySelector(".cub-panel-fill");
     if (pct == null) {
-      meta.textContent = "—";
+      // Row absent from the usage payload (plan feature not in use):
+      // show an explicit zero state instead of a bare dash.
+      meta.textContent = t("notUsed");
       fillEl.style.width = "0%";
       return;
     }
@@ -547,30 +561,35 @@
     return text;
   }
 
-  function paintContext(contextTokens, totalTokens, win, source) {
+  function paintContext(contextTokens, totalTokens, win) {
     if (!root) return;
     const pct = Math.max(0, Math.min(100, (contextTokens / win) * 100));
     const arc = root.querySelector(".cub-donut-arc");
     const circumference = 2 * Math.PI * 13;
     if (arc) arc.setAttribute("stroke-dashoffset", String(circumference * (1 - pct / 100)));
     if (donutPct) donutPct.textContent = `${Math.round(pct)}%`;
-    const suffix = source === "estimate" ? t("estimateSuffix") : "";
-    setTip(donutTip, "pct", t("pctOfContext", [String(Math.round(pct))]) + suffix);
+    setTip(donutTip, "pct", t("pctOfContext", [String(Math.round(pct))]));
     setTip(donutTip, "ctx", t("ctxLength", [formatTokens(contextTokens), formatTokens(win)]));
-    setTip(donutTip, "total", t("totalTokens", [formatTokens(totalTokens)]) + suffix);
+    setTip(donutTip, "total", t("totalTokens", [formatTokens(totalTokens)]));
+    // Context-pressure states: amber past CTX_WARN_PCT, red + pulse past
+    // CTX_CRIT_PCT, with a "start a new chat" hint in the tooltip.
+    donut.classList.toggle("cub-warn", pct >= CTX_WARN_PCT && pct < CTX_CRIT_PCT);
+    donut.classList.toggle("cub-crit", pct >= CTX_CRIT_PCT);
+    const advice = donutTip && donutTip.querySelector('[data-tip="advice"]');
+    if (advice) advice.hidden = pct < CTX_WARN_PCT;
   }
 
   function renderContext() {
     if (!root) return;
     // 1. Paint the fast DOM heuristic immediately so the donut never goes stale
     const estTokens = estimateTokens(readConversationText());
-    paintContext(estTokens, estTokens, DEFAULT_CONTEXT_WINDOW, "estimate");
-    // 2. In the background, upgrade from the conversation API — exact counts
-    // if the payload carries them, else a full-payload estimate (includes
-    // tool traffic and attachments the DOM never shows).
+    paintContext(estTokens, estTokens, DEFAULT_CONTEXT_WINDOW);
+    // 2. In the background, upgrade from the conversation API — a full-payload
+    // estimate that includes tool traffic, attachments and thinking the DOM
+    // never shows, and that follows the active branch of the tree.
     fetchConversationStats().then((stats) => {
       if (stats && stats.contextTokens > 0) {
-        paintContext(stats.contextTokens, stats.totalTokens, stats.window, stats.source);
+        paintContext(stats.contextTokens, stats.totalTokens, stats.window);
       }
     });
   }

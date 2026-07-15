@@ -2,6 +2,8 @@
   --cub-coral: #D97757;
   --cub-coral-deep: #C96442;
   --cub-coral-full: #B8513A;
+  --cub-amber: #B45309;
+  --cub-red: #C63A2F;
   --cub-bg: rgba(245, 244, 238, 0.92);
   --cub-bg-track: #E8E6DC;
   --cub-border: rgba(0, 0, 0, 0.08);
@@ -29,6 +31,8 @@
 
 @media (prefers-color-scheme: dark) {
   #claude-usage-bar {
+    --cub-amber: #E8A33D;
+    --cub-red: #E5675C;
     --cub-bg: rgba(44, 42, 38, 0.92);
     --cub-bg-track: #3A3631;
     --cub-border: rgba(255, 255, 255, 0.06);
@@ -233,6 +237,42 @@
 
 #claude-usage-bar .cub-donut-arc {
   transition: stroke-dashoffset 0.4s ease;
+}
+
+/* Context-pressure states: the SVG strokes use currentColor, so recoloring
+   the donut container recolors the ring. Critical state gently pulses. */
+
+#claude-usage-bar .cub-donut.cub-warn {
+  color: var(--cub-amber);
+}
+
+#claude-usage-bar .cub-donut.cub-crit {
+  color: var(--cub-red);
+}
+
+#claude-usage-bar .cub-donut.cub-crit svg {
+  animation: cub-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes cub-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+#claude-usage-bar .cub-tooltip .cub-advice {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--cub-border);
+  font-weight: 600;
+  color: var(--cub-amber);
+}
+
+#claude-usage-bar .cub-donut.cub-crit .cub-tooltip .cub-advice {
+  color: var(--cub-red);
+}
+
+#claude-usage-bar .cub-tooltip .cub-advice[hidden] {
+  display: none;
 }
 
 #claude-usage-bar .cub-donut-pct {
