@@ -103,6 +103,12 @@
   // contextTokens covers only the current branch of the conversation tree
   // (what actually occupies the context window); totalTokens sums every
   // message ever sent, including abandoned branches after edits/retries.
+  // The payload carries no token counts (verified July 2026), so both are
+  // heuristic estimates over the full payload text — which, unlike the DOM,
+  // includes tool calls/results, attachments and thinking blocks.
+  // Thinking from earlier turns is stripped from Claude's context, so it
+  // counts toward the total but only the latest turn's thinking counts
+  // toward context occupancy.
   function extractConversationStats(data) {
     if (!data) return null;
     const messages =
@@ -113,26 +119,10 @@
     if (!Array.isArray(messages) || messages.length === 0) return null;
 
     const branch = currentBranchMessages(data, messages);
-    const win = detectContextWindow(data);
-
-    // Exact tier: per-message token counts, if the payload carries them.
-    const exactBranch = sumMsgTokens(branch);
-    const exactTotal = sumMsgTokens(messages);
-    if (exactBranch != null) {
-      return {
-        contextTokens: exactBranch,
-        totalTokens: exactTotal != null ? exactTotal : exactBranch,
-        window: win,
-        source: "exact",
-      };
-    }
-
-    // Estimate tier: run the heuristic over the full payload text — unlike
-    // the DOM, this includes tool calls/results, attachments and thinking.
     return {
-      contextTokens: estimateMessagesTokens(branch),
-      totalTokens: estimateMessagesTokens(messages),
-      window: win,
+      contextTokens: estimateMessagesTokens(branch, "latest"),
+      totalTokens: estimateMessagesTokens(messages, "all"),
+      window: detectContextWindow(data),
       source: "estimate",
     };
   }
@@ -171,45 +161,22 @@
     return chain.length ? chain : messages;
   }
 
-  function sumMsgTokens(messages) {
-    let total = 0;
-    let foundAny = false;
-    for (const m of messages) {
-      const t = readMsgTokens(m);
-      if (t != null) {
-        total += t;
-        foundAny = true;
+  // thinkingMode: "all" counts thinking in every message; "latest" counts it
+  // only for the final assistant message (prior thinking leaves the context).
+  function estimateMessagesTokens(messages, thinkingMode) {
+    let lastAssistant = -1;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const m = messages[i];
+      if (m && (m.sender === "assistant" || m.role === "assistant")) {
+        lastAssistant = i;
+        break;
       }
     }
-    return foundAny ? total : null;
-  }
-
-  function readMsgTokens(m) {
-    if (!m || typeof m !== "object") return null;
-    const candidates = [
-      m.token_count,
-      m.num_tokens,
-      m.tokens,
-      m.input_tokens,
-      m.usage && m.usage.input_tokens,
-      m.usage && m.usage.output_tokens,
-      m.metadata && m.metadata.tokens,
-    ];
-    let sum = 0;
-    let any = false;
-    for (const c of candidates) {
-      if (typeof c === "number" && isFinite(c) && c >= 0) {
-        sum += c;
-        any = true;
-      }
-    }
-    return any ? sum : null;
-  }
-
-  function estimateMessagesTokens(messages) {
     let total = 0;
-    for (const m of messages) {
-      total += MSG_OVERHEAD_TOKENS + estimateTokens(collectMessageText(m));
+    for (let i = 0; i < messages.length; i++) {
+      const m = messages[i];
+      const withThinking = thinkingMode === "all" || i === lastAssistant;
+      total += MSG_OVERHEAD_TOKENS + estimateTokens(collectMessageText(m, withThinking));
       total += IMAGE_TOKENS * countMessageImages(m);
     }
     return total;
@@ -217,7 +184,7 @@
 
   // Pulls text out of every content block shape the payload can carry:
   // plain text, thinking, tool_use inputs, tool_result contents, attachments.
-  function collectMessageText(m) {
+  function collectMessageText(m, withThinking) {
     if (!m || typeof m !== "object") return "";
     let out = "";
     const push = (s) => {
@@ -228,8 +195,7 @@
     for (const b of blocks) {
       if (!b || typeof b !== "object") continue;
       push(b.text);
-      push(b.thinking);
-      push(b.summary);
+      if (withThinking) push(b.thinking);
       if (b.input != null && typeof b.input === "object") push(JSON.stringify(b.input));
       if (typeof b.content === "string") push(b.content);
       else if (Array.isArray(b.content)) {
