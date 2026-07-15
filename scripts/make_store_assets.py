@@ -199,6 +199,12 @@ def main() -> int:
         print(f"no source images found in {src_dir}", file=sys.stderr)
         return 1
 
+    # Clear stale outputs — the store allows max 5 screenshots, so leftovers
+    # from a previous run with different source names must not linger.
+    if out_dir.exists():
+        for old in out_dir.glob("*.png"):
+            old.unlink()
+
     print(f"found {len(sources)} source images in {src_dir}")
     for i, src in enumerate(sources[:5], 1):
         out_name = f"{i:02d}-{src.stem}-1280x800.png"

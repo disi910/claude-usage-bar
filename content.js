@@ -85,7 +85,8 @@
     const id = await discoverOrgId();
     if (!id) return null;
     try {
-      const url = `/api/organizations/${id}/chat_conversations/${convId}?tree=true&render_all_content=true`;
+      // Query params mirror what the claude.ai frontend itself sends (July 2026).
+      const url = `/api/organizations/${id}/chat_conversations/${convId}?tree=True&rendering_mode=messages&render_all_tools=true&consistency=eventual`;
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) return null;
       const data = await res.json();
