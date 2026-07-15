@@ -254,6 +254,42 @@
   animation: cub-pulse 1.6s ease-in-out infinite;
 }
 
+/* "!" badge pinned to the ring's top-right corner */
+
+#claude-usage-bar .cub-donut-badge {
+  position: absolute;
+  top: -4px;
+  left: 22px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--cub-amber);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--cub-panel-bg);
+  pointer-events: none;
+}
+
+#claude-usage-bar .cub-donut.cub-crit .cub-donut-badge {
+  background: var(--cub-red);
+}
+
+#claude-usage-bar .cub-donut-badge[hidden] {
+  display: none;
+}
+
+#claude-usage-bar.cub-inline .cub-donut-badge {
+  top: -3px;
+  left: 16px;
+  width: 11px;
+  height: 11px;
+  font-size: 8px;
+  line-height: 11px;
+}
+
 @keyframes cub-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.45; }

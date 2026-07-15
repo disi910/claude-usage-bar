@@ -12,9 +12,9 @@
   const MSG_OVERHEAD_TOKENS = 6;
   const IMAGE_TOKENS = 1500;
 
-  // Context-pressure thresholds (% of window) for the donut's warning states.
-  const CTX_WARN_PCT = 70;
-  const CTX_CRIT_PCT = 90;
+  // Context-pressure thresholds for the donut's warning states: amber badge
+  // past this many tokens, red badge once the window itself is exceeded.
+  const CTX_WARN_TOKENS = 75_000;
 
   let orgId = null;
   let root = null;
@@ -328,6 +328,7 @@
                   stroke-linecap="round" stroke-dasharray="81.68" stroke-dashoffset="81.68"
                   transform="rotate(-90 16 16)"></circle>
         </svg>
+        <span class="cub-donut-badge" hidden>!</span>
         <span class="cub-donut-pct">0%</span>
         <div class="cub-tooltip" role="tooltip">
           <div>${esc(t("contextTokenUsage"))}</div>
@@ -571,22 +572,34 @@
     setTip(donutTip, "pct", t("pctOfContext", [String(Math.round(pct))]));
     setTip(donutTip, "ctx", t("ctxLength", [formatTokens(contextTokens), formatTokens(win)]));
     setTip(donutTip, "total", t("totalTokens", [formatTokens(totalTokens)]));
-    // Context-pressure states: amber past CTX_WARN_PCT, red + pulse past
-    // CTX_CRIT_PCT, with a "start a new chat" hint in the tooltip.
-    donut.classList.toggle("cub-warn", pct >= CTX_WARN_PCT && pct < CTX_CRIT_PCT);
-    donut.classList.toggle("cub-crit", pct >= CTX_CRIT_PCT);
+    // Context-pressure states: amber "!" badge past CTX_WARN_TOKENS, red
+    // "!" + pulse once the window is exceeded, hint in the tooltip.
+    const over = contextTokens > win;
+    const warn = !over && contextTokens >= CTX_WARN_TOKENS;
+    donut.classList.toggle("cub-warn", warn);
+    donut.classList.toggle("cub-crit", over);
+    const badge = donut.querySelector(".cub-donut-badge");
+    if (badge) badge.hidden = !warn && !over;
     const advice = donutTip && donutTip.querySelector('[data-tip="advice"]');
-    if (advice) advice.hidden = pct < CTX_WARN_PCT;
+    if (advice) advice.hidden = !warn && !over;
   }
 
   function renderContext() {
     if (!root) return;
-    // 1. Paint the fast DOM heuristic immediately so the donut never goes stale
-    const estTokens = estimateTokens(readConversationText());
-    paintContext(estTokens, estTokens, DEFAULT_CONTEXT_WINDOW);
-    // 2. In the background, upgrade from the conversation API — a full-payload
-    // estimate that includes tool traffic, attachments and thinking the DOM
-    // never shows, and that follows the active branch of the tree.
+    // API-based stats are authoritative. The DOM heuristic exists only to
+    // bootstrap a brand-new conversation before the first fetch resolves —
+    // claude.ai virtualizes long chats, so the DOM holds a fraction of the
+    // conversation and repainting from it causes wild flicker.
+    const convId = currentConversationId();
+    const cached = convId && lastConvFetch.id === convId ? lastConvFetch.stats : null;
+    if (cached && cached.contextTokens > 0) {
+      paintContext(cached.contextTokens, cached.totalTokens, cached.window);
+    } else {
+      const estTokens = estimateTokens(readConversationText());
+      paintContext(estTokens, estTokens, DEFAULT_CONTEXT_WINDOW);
+    }
+    // Refresh from the conversation API — a full-payload estimate that
+    // includes tool traffic, attachments and thinking the DOM never shows.
     fetchConversationStats().then((stats) => {
       if (stats && stats.contextTokens > 0) {
         paintContext(stats.contextTokens, stats.totalTokens, stats.window);
@@ -650,6 +663,10 @@
       lastAssistantSignature = sig;
       cacheStartedAt = Date.now();
       renderCache();
+      // New message content landed — bust the conversation-stats throttle so
+      // the donut reflects the real token increase without a page refresh.
+      lastConvFetch.ts = 0;
+      renderContext();
     }
   }
 
@@ -690,6 +707,10 @@
     const data = await fetchUsage();
     if (data) lastUsage = data;
     renderUsage(lastUsage);
+    // Periodic context refresh, so the donut stays honest even when no DOM
+    // mutations fire (e.g. a long streaming reply already settled).
+    lastConvFetch.ts = 0;
+    renderContext();
   }
 
   async function start() {
