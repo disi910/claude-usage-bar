@@ -128,10 +128,25 @@
   "leaveReview": {
     "message": "마음에 드시나요? 리뷰를 남겨주세요"
   },
-  "startNewChat": {
-    "message": "컨텍스트가 거의 찼습니다 — 새 채팅을 시작하는 것이 좋습니다"
-  },
   "notUsed": {
     "message": "0% · 미사용"
+  },
+  "ctxAdvice": {
+    "message": "Claude가 느려지고 이전 메시지가 누락될 수 있습니다. 새 채팅을 시작하는 것이 좋습니다."
+  },
+  "catYou": {
+    "message": "사용자"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "사고"
+  },
+  "catTools": {
+    "message": "도구"
+  },
+  "catFiles": {
+    "message": "파일"
   }
 }

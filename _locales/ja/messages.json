@@ -128,10 +128,25 @@
   "leaveReview": {
     "message": "気に入ったらレビューをお願いします"
   },
-  "startNewChat": {
-    "message": "コンテキストがほぼ満杯です — 新しいチャットの開始をおすすめします"
-  },
   "notUsed": {
     "message": "0% · 未使用"
+  },
+  "ctxAdvice": {
+    "message": "Claude の応答が遅くなり、以前のメッセージが失われる場合があります。新しいチャットの開始をおすすめします。"
+  },
+  "catYou": {
+    "message": "あなた"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "思考"
+  },
+  "catTools": {
+    "message": "ツール"
+  },
+  "catFiles": {
+    "message": "ファイル"
   }
 }

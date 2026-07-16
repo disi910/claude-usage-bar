@@ -12,10 +12,6 @@
   const MSG_OVERHEAD_TOKENS = 6;
   const IMAGE_TOKENS = 1500;
 
-  // Context-pressure thresholds for the donut's warning states: amber badge
-  // past this many tokens, red badge once the window itself is exceeded.
-  const CTX_WARN_TOKENS = 75_000;
-
   let orgId = null;
   let root = null;
   let bar, fill, pctLabel, resetLabel, panel, donut, donutPct, donutTip, hourglass, hourglassLabel, hourglassTip;
@@ -123,10 +119,13 @@
     if (!Array.isArray(messages) || messages.length === 0) return null;
 
     const branch = currentBranchMessages(data, messages);
+    const branchCats = analyzeMessages(branch, "latest");
+    const allCats = analyzeMessages(messages, "all");
     return {
-      contextTokens: estimateMessagesTokens(branch, "latest"),
-      totalTokens: estimateMessagesTokens(messages, "all"),
+      contextTokens: branchCats.total,
+      totalTokens: allCats.total,
       window: detectContextWindow(data),
+      cats: branchCats,
       source: "estimate",
     };
   }
@@ -141,6 +140,12 @@
     for (const c of candidates) {
       if (typeof c === "number" && isFinite(c) && c >= 10_000) return c;
     }
+    // The payload carries the model slug (e.g. "claude-sonnet-5"). Every
+    // current claude.ai model runs a 200k window; extended-context variants
+    // advertise it in the slug, so key off that.
+    const model = String(data.model || "");
+    if (/1m|million|extended/i.test(model)) return 1_000_000;
+    if (/500k/i.test(model)) return 500_000;
     return DEFAULT_CONTEXT_WINDOW;
   }
 
@@ -165,9 +170,12 @@
     return chain.length ? chain : messages;
   }
 
-  // thinkingMode: "all" counts thinking in every message; "latest" counts it
-  // only for the final assistant message (prior thinking leaves the context).
-  function estimateMessagesTokens(messages, thinkingMode) {
+  // Per-category token analysis. thinkingMode: "all" counts thinking in every
+  // message; "latest" counts it only for the final assistant message (prior
+  // thinking is stripped from Claude's context).
+  // Returns { user, assistant, thinking, tools, files, total }.
+  function analyzeMessages(messages, thinkingMode) {
+    const cats = { user: 0, assistant: 0, thinking: 0, tools: 0, files: 0 };
     let lastAssistant = -1;
     for (let i = messages.length - 1; i >= 0; i--) {
       const m = messages[i];
@@ -176,44 +184,51 @@
         break;
       }
     }
-    let total = 0;
     for (let i = 0; i < messages.length; i++) {
       const m = messages[i];
-      const withThinking = thinkingMode === "all" || i === lastAssistant;
-      total += MSG_OVERHEAD_TOKENS + estimateTokens(collectMessageText(m, withThinking));
-      total += IMAGE_TOKENS * countMessageImages(m);
+      if (!m || typeof m !== "object") continue;
+      const parts = collectMessageParts(m);
+      const isUser = m.sender === "human" || m.role === "user" || m.role === "human";
+      cats[isUser ? "user" : "assistant"] += MSG_OVERHEAD_TOKENS + estimateTokens(parts.text);
+      if (thinkingMode === "all" || i === lastAssistant) {
+        cats.thinking += estimateTokens(parts.thinking);
+      }
+      cats.tools += estimateTokens(parts.tools);
+      cats.files += estimateTokens(parts.files) + IMAGE_TOKENS * countMessageImages(m);
     }
-    return total;
+    cats.total = cats.user + cats.assistant + cats.thinking + cats.tools + cats.files;
+    return cats;
   }
 
-  // Pulls text out of every content block shape the payload can carry:
-  // plain text, thinking, tool_use inputs, tool_result contents, attachments.
-  function collectMessageText(m, withThinking) {
-    if (!m || typeof m !== "object") return "";
-    let out = "";
-    const push = (s) => {
-      if (typeof s === "string" && s) out += s + "\n";
+  // Splits a message's payload into token categories: visible text, thinking,
+  // tool traffic (tool_use inputs + tool_result outputs), and file/attachment
+  // content extracted server-side.
+  function collectMessageParts(m) {
+    const parts = { text: "", thinking: "", tools: "", files: "" };
+    const push = (k, s) => {
+      if (typeof s === "string" && s) parts[k] += s + "\n";
     };
-    push(m.text);
+    push("text", m.text);
     const blocks = Array.isArray(m.content) ? m.content : [];
     for (const b of blocks) {
       if (!b || typeof b !== "object") continue;
-      push(b.text);
-      if (withThinking) push(b.thinking);
-      if (b.input != null && typeof b.input === "object") push(JSON.stringify(b.input));
-      if (typeof b.content === "string") push(b.content);
+      push("thinking", b.thinking);
+      if (b.input != null && typeof b.input === "object") push("tools", JSON.stringify(b.input));
+      const isTool = b.type === "tool_use" || b.type === "tool_result";
+      push(isTool ? "tools" : "text", b.text);
+      if (typeof b.content === "string") push("tools", b.content);
       else if (Array.isArray(b.content)) {
         for (const n of b.content) {
-          if (n && typeof n === "object") push(n.text);
-          else if (typeof n === "string") push(n);
+          if (n && typeof n === "object") push("tools", n.text);
+          else if (typeof n === "string") push("tools", n);
         }
       }
     }
     const atts = Array.isArray(m.attachments) ? m.attachments : [];
     for (const a of atts) {
-      if (a && typeof a === "object") push(a.extracted_content || a.text);
+      if (a && typeof a === "object") push("files", a.extracted_content || a.text);
     }
-    return out;
+    return parts;
   }
 
   function countMessageImages(m) {
@@ -319,7 +334,17 @@
         </div>`;
   }
 
+  const CAT_ORDER = ["user", "assistant", "thinking", "tools", "files"];
+
   function donutTemplate() {
+    const catRow = (key, label) => `
+          <div class="cub-cat" data-cat="${key}">
+            <div class="cub-cat-head"><span class="cub-cat-dot"></span><span>${esc(label)}</span><span class="cub-cat-val">0</span></div>
+            <div class="cub-cat-track"><div class="cub-cat-fill"></div></div>
+          </div>`;
+    // r = 100 / 2π so the circumference is exactly 100 and dasharray works in %.
+    const seg = (key) => `<circle data-seg="${key}" cx="18" cy="18" r="15.9155" fill="none"
+            stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="25"></circle>`;
     return `
       <div class="cub-donut" data-cub-donut tabindex="0" aria-label="${esc(t("contextAriaLabel"))}">
         <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
@@ -330,12 +355,27 @@
         </svg>
         <span class="cub-donut-badge" hidden>!</span>
         <span class="cub-donut-pct">0%</span>
-        <div class="cub-tooltip" role="tooltip">
+        <div class="cub-tooltip cub-ctx-tip" role="tooltip">
           <div>${esc(t("contextTokenUsage"))}</div>
-          <div data-tip="pct">${esc(t("pctOfContext", ["0"]))}</div>
-          <div data-tip="ctx">${esc(t("ctxLength", ["0", "200k"]))}</div>
-          <div data-tip="total">${esc(t("totalTokens", ["0"]))}</div>
-          <div class="cub-advice" data-tip="advice" hidden>${esc(t("startNewChat"))}</div>
+          <div class="cub-ctx-main">
+            <svg class="cub-break" viewBox="0 0 36 36" width="56" height="56" aria-hidden="true">
+              <circle class="cub-break-track" cx="18" cy="18" r="15.9155" fill="none" stroke-width="4"></circle>
+              ${CAT_ORDER.map(seg).join("")}
+            </svg>
+            <div class="cub-ctx-lines">
+              <div data-tip="pct">${esc(t("pctOfContext", ["0"]))}</div>
+              <div data-tip="ctx">${esc(t("ctxLength", ["0", "200k"]))}</div>
+              <div data-tip="total">${esc(t("totalTokens", ["0"]))}</div>
+            </div>
+          </div>
+          <div class="cub-cats">
+            ${catRow("user", t("catYou"))}
+            ${catRow("assistant", t("catClaude"))}
+            ${catRow("thinking", t("catThinking"))}
+            ${catRow("tools", t("catTools"))}
+            ${catRow("files", t("catFiles"))}
+          </div>
+          <div class="cub-advice" data-tip="advice" hidden><span class="cub-advice-icon">!</span><span>${esc(t("ctxAdvice"))}</span></div>
         </div>
       </div>`;
   }
@@ -562,7 +602,7 @@
     return text;
   }
 
-  function paintContext(contextTokens, totalTokens, win) {
+  function paintContext(contextTokens, totalTokens, win, cats) {
     if (!root) return;
     const pct = Math.max(0, Math.min(100, (contextTokens / win) * 100));
     const arc = root.querySelector(".cub-donut-arc");
@@ -572,16 +612,41 @@
     setTip(donutTip, "pct", t("pctOfContext", [String(Math.round(pct))]));
     setTip(donutTip, "ctx", t("ctxLength", [formatTokens(contextTokens), formatTokens(win)]));
     setTip(donutTip, "total", t("totalTokens", [formatTokens(totalTokens)]));
-    // Context-pressure states: amber "!" badge past CTX_WARN_TOKENS, red
-    // "!" + pulse once the window is exceeded, hint in the tooltip.
+    // Ring color: green below 50%, yellow below 75%, red from 75% up.
+    // Alerts ("!" badge + advice line): yellow from 75%, red past 100%.
     const over = contextTokens > win;
-    const warn = !over && contextTokens >= CTX_WARN_TOKENS;
-    donut.classList.toggle("cub-warn", warn);
-    donut.classList.toggle("cub-crit", over);
+    donut.classList.toggle("cub-green", pct < 50);
+    donut.classList.toggle("cub-yellow", pct >= 50 && pct < 75);
+    donut.classList.toggle("cub-red", pct >= 75);
+    donut.classList.toggle("cub-over", over);
+    const alert = pct >= 75;
     const badge = donut.querySelector(".cub-donut-badge");
-    if (badge) badge.hidden = !warn && !over;
+    if (badge) badge.hidden = !alert;
     const advice = donutTip && donutTip.querySelector('[data-tip="advice"]');
-    if (advice) advice.hidden = !warn && !over;
+    if (advice) advice.hidden = !alert;
+    if (cats) paintBreakdown(cats, contextTokens);
+  }
+
+  // Segmented hollow pie + legend rows showing where the context tokens go.
+  function paintBreakdown(cats, contextTokens) {
+    if (!donutTip) return;
+    const denom = Math.max(1, contextTokens);
+    let acc = 0;
+    for (const key of CAT_ORDER) {
+      const v = Math.max(0, cats[key] || 0);
+      const p = Math.min(100, (v / denom) * 100);
+      const seg = donutTip.querySelector(`[data-seg="${key}"]`);
+      if (seg) {
+        seg.setAttribute("stroke-dasharray", `${p} ${100 - p}`);
+        seg.setAttribute("stroke-dashoffset", String(25 - acc));
+      }
+      const row = donutTip.querySelector(`.cub-cat[data-cat="${key}"]`);
+      if (row) {
+        row.querySelector(".cub-cat-val").textContent = formatTokens(Math.round(v));
+        row.querySelector(".cub-cat-fill").style.width = `${p}%`;
+      }
+      acc += p;
+    }
   }
 
   function renderContext() {
@@ -593,16 +658,16 @@
     const convId = currentConversationId();
     const cached = convId && lastConvFetch.id === convId ? lastConvFetch.stats : null;
     if (cached && cached.contextTokens > 0) {
-      paintContext(cached.contextTokens, cached.totalTokens, cached.window);
+      paintContext(cached.contextTokens, cached.totalTokens, cached.window, cached.cats);
     } else {
       const estTokens = estimateTokens(readConversationText());
-      paintContext(estTokens, estTokens, DEFAULT_CONTEXT_WINDOW);
+      paintContext(estTokens, estTokens, DEFAULT_CONTEXT_WINDOW, null);
     }
     // Refresh from the conversation API — a full-payload estimate that
     // includes tool traffic, attachments and thinking the DOM never shows.
     fetchConversationStats().then((stats) => {
       if (stats && stats.contextTokens > 0) {
-        paintContext(stats.contextTokens, stats.totalTokens, stats.window);
+        paintContext(stats.contextTokens, stats.totalTokens, stats.window, stats.cats);
       }
     });
   }

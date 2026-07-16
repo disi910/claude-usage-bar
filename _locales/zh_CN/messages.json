@@ -128,10 +128,25 @@
   "leaveReview": {
     "message": "喜欢吗？留个评价吧"
   },
-  "startNewChat": {
-    "message": "上下文即将用满——建议开始新对话"
-  },
   "notUsed": {
     "message": "0% · 未使用"
+  },
+  "ctxAdvice": {
+    "message": "Claude 会变慢并可能丢失较早的消息。建议开始新对话。"
+  },
+  "catYou": {
+    "message": "你"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "思考"
+  },
+  "catTools": {
+    "message": "工具"
+  },
+  "catFiles": {
+    "message": "文件"
   }
 }

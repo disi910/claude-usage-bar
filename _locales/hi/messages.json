@@ -128,10 +128,25 @@
   "leaveReview": {
     "message": "पसंद आया? समीक्षा लिखें"
   },
-  "startNewChat": {
-    "message": "कॉन्टेक्स्ट लगभग भर गया है — नई चैट शुरू करने पर विचार करें"
-  },
   "notUsed": {
     "message": "0% · अप्रयुक्त"
+  },
+  "ctxAdvice": {
+    "message": "Claude धीमा हो जाता है और पुराने संदेश छूट सकते हैं। नई चैट शुरू करने पर विचार करें।"
+  },
+  "catYou": {
+    "message": "आप"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "सोच"
+  },
+  "catTools": {
+    "message": "टूल"
+  },
+  "catFiles": {
+    "message": "फ़ाइलें"
   }
 }

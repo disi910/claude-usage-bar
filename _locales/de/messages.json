@@ -128,10 +128,25 @@
   "leaveReview": {
     "message": "Gefällt dir die Erweiterung? Schreib eine Bewertung"
   },
-  "startNewChat": {
-    "message": "Kontext fast voll – starte am besten einen neuen Chat"
-  },
   "notUsed": {
     "message": "0 % · ungenutzt"
+  },
+  "ctxAdvice": {
+    "message": "Claude wird langsamer und kann frühere Nachrichten verlieren. Starte am besten einen neuen Chat."
+  },
+  "catYou": {
+    "message": "Du"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "Denken"
+  },
+  "catTools": {
+    "message": "Tools"
+  },
+  "catFiles": {
+    "message": "Dateien"
   }
 }

@@ -128,10 +128,25 @@
   "leaveReview": {
     "message": "Beğendiniz mi? Yorum bırakın"
   },
-  "startNewChat": {
-    "message": "Bağlam neredeyse dolu — yeni bir sohbet başlatmayı düşünün"
-  },
   "notUsed": {
     "message": "%0 · kullanılmadı"
+  },
+  "ctxAdvice": {
+    "message": "Claude yavaşlar ve önceki mesajlar düşebilir. Yeni bir sohbet başlatmayı düşünün."
+  },
+  "catYou": {
+    "message": "Siz"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "Düşünme"
+  },
+  "catTools": {
+    "message": "Araçlar"
+  },
+  "catFiles": {
+    "message": "Dosyalar"
   }
 }

@@ -128,10 +128,25 @@
   "leaveReview": {
     "message": "Нравится? Оставьте отзыв"
   },
-  "startNewChat": {
-    "message": "Контекст почти заполнен — лучше начать новый чат"
-  },
   "notUsed": {
     "message": "0% · не используется"
+  },
+  "ctxAdvice": {
+    "message": "Claude замедляется и может терять ранние сообщения. Лучше начать новый чат."
+  },
+  "catYou": {
+    "message": "Вы"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "Размышления"
+  },
+  "catTools": {
+    "message": "Инструменты"
+  },
+  "catFiles": {
+    "message": "Файлы"
   }
 }

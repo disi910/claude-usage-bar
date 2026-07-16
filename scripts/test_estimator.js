@@ -25,8 +25,8 @@ const names = [
   "extractConversationStats",
   "detectContextWindow",
   "currentBranchMessages",
-  "estimateMessagesTokens",
-  "collectMessageText",
+  "analyzeMessages",
+  "collectMessageParts",
   "countMessageImages",
   "estimateTokens",
 ];
@@ -56,3 +56,7 @@ const pct = ((stats.contextTokens / stats.window) * 100).toFixed(1);
 console.log(`context : ${stats.contextTokens} tokens (${pct}% of ${stats.window})`);
 console.log(`total   : ${stats.totalTokens} tokens`);
 console.log(`source  : ${stats.source}`);
+console.log("breakdown of context:");
+for (const k of ["user", "assistant", "thinking", "tools", "files"]) {
+  console.log(`  ${k.padEnd(9)}: ${stats.cats[k]}`);
+}
