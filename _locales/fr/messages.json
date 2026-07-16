@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k de contexte",
+    "message": "$TOKENS$ / $LIMIT$ de contexte",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -71,9 +74,6 @@
         "content": "$1"
       }
     }
-  },
-  "estimateSuffix": {
-    "message": " (estimation)"
   },
   "contextAriaLabel": {
     "message": "Utilisation de la fenêtre de contexte"
@@ -124,5 +124,29 @@
   },
   "positionComposer": {
     "message": "Dans la zone de chat"
+  },
+  "leaveReview": {
+    "message": "Ça vous plaît ? Laissez un avis"
+  },
+  "notUsed": {
+    "message": "0 % · inutilisé"
+  },
+  "ctxAdvice": {
+    "message": "Claude ralentit et peut oublier les messages précédents. Pensez à démarrer une nouvelle discussion."
+  },
+  "catYou": {
+    "message": "Vous"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "Réflexion"
+  },
+  "catTools": {
+    "message": "Outils"
+  },
+  "catFiles": {
+    "message": "Fichiers"
   }
 }

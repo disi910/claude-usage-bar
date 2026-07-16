@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k 上下文长度",
+    "message": "$TOKENS$ / $LIMIT$ 上下文长度",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -71,9 +74,6 @@
         "content": "$1"
       }
     }
-  },
-  "estimateSuffix": {
-    "message": "（估算）"
   },
   "contextAriaLabel": {
     "message": "上下文窗口用量"
@@ -124,5 +124,29 @@
   },
   "positionComposer": {
     "message": "聊天框内"
+  },
+  "leaveReview": {
+    "message": "喜欢吗？留个评价吧"
+  },
+  "notUsed": {
+    "message": "0% · 未使用"
+  },
+  "ctxAdvice": {
+    "message": "Claude 会变慢并可能丢失较早的消息。建议开始新对话。"
+  },
+  "catYou": {
+    "message": "你"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "思考"
+  },
+  "catTools": {
+    "message": "工具"
+  },
+  "catFiles": {
+    "message": "文件"
   }
 }

@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k bağlam uzunluğu",
+    "message": "$TOKENS$ / $LIMIT$ bağlam uzunluğu",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -71,9 +74,6 @@
         "content": "$1"
       }
     }
-  },
-  "estimateSuffix": {
-    "message": " (tahmini)"
   },
   "contextAriaLabel": {
     "message": "Bağlam penceresi kullanımı"
@@ -124,5 +124,29 @@
   },
   "positionComposer": {
     "message": "Sohbet kutusunda"
+  },
+  "leaveReview": {
+    "message": "Beğendiniz mi? Yorum bırakın"
+  },
+  "notUsed": {
+    "message": "%0 · kullanılmadı"
+  },
+  "ctxAdvice": {
+    "message": "Claude yavaşlar ve önceki mesajlar düşebilir. Yeni bir sohbet başlatmayı düşünün."
+  },
+  "catYou": {
+    "message": "Siz"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "Düşünme"
+  },
+  "catTools": {
+    "message": "Araçlar"
+  },
+  "catFiles": {
+    "message": "Dosyalar"
   }
 }

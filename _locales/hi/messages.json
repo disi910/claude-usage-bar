@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k कॉन्टेक्स्ट लंबाई",
+    "message": "$TOKENS$ / $LIMIT$ कॉन्टेक्स्ट लंबाई",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -71,9 +74,6 @@
         "content": "$1"
       }
     }
-  },
-  "estimateSuffix": {
-    "message": " (अनुमान)"
   },
   "contextAriaLabel": {
     "message": "कॉन्टेक्स्ट विंडो उपयोग"
@@ -124,5 +124,29 @@
   },
   "positionComposer": {
     "message": "चैट बॉक्स में"
+  },
+  "leaveReview": {
+    "message": "पसंद आया? समीक्षा लिखें"
+  },
+  "notUsed": {
+    "message": "0% · अप्रयुक्त"
+  },
+  "ctxAdvice": {
+    "message": "Claude धीमा हो जाता है और पुराने संदेश छूट सकते हैं। नई चैट शुरू करने पर विचार करें।"
+  },
+  "catYou": {
+    "message": "आप"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "सोच"
+  },
+  "catTools": {
+    "message": "टूल"
+  },
+  "catFiles": {
+    "message": "फ़ाइलें"
   }
 }

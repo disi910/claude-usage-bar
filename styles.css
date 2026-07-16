@@ -2,6 +2,14 @@
   --cub-coral: #D97757;
   --cub-coral-deep: #C96442;
   --cub-coral-full: #B8513A;
+  --cub-amber: #B45309;
+  --cub-red: #C63A2F;
+  --cub-green: #6E8F67;
+  --cub-cat-user: #C96442;
+  --cub-cat-assistant: #7D9B76;
+  --cub-cat-thinking: #9C87C9;
+  --cub-cat-tools: #5B8FA8;
+  --cub-cat-files: #C2A24B;
   --cub-bg: rgba(245, 244, 238, 0.92);
   --cub-bg-track: #E8E6DC;
   --cub-border: rgba(0, 0, 0, 0.08);
@@ -29,6 +37,14 @@
 
 @media (prefers-color-scheme: dark) {
   #claude-usage-bar {
+    --cub-amber: #E8A33D;
+    --cub-red: #E5675C;
+    --cub-green: #8FB587;
+    --cub-cat-user: #D97757;
+    --cub-cat-assistant: #93B08B;
+    --cub-cat-thinking: #B3A1E0;
+    --cub-cat-tools: #7BAAC4;
+    --cub-cat-files: #D4B863;
     --cub-bg: rgba(44, 42, 38, 0.92);
     --cub-bg-track: #3A3631;
     --cub-border: rgba(255, 255, 255, 0.06);
@@ -235,6 +251,216 @@
   transition: stroke-dashoffset 0.4s ease;
 }
 
+/* Context-pressure states: the SVG strokes use currentColor, so recoloring
+   the donut container recolors the ring. Green < 50%, yellow < 75%, red
+   from 75%; only past 100% does it pulse. */
+
+#claude-usage-bar .cub-donut.cub-green {
+  color: var(--cub-green);
+}
+
+#claude-usage-bar .cub-donut.cub-yellow {
+  color: var(--cub-amber);
+}
+
+#claude-usage-bar .cub-donut.cub-red {
+  color: var(--cub-red);
+}
+
+#claude-usage-bar .cub-donut.cub-over svg {
+  animation: cub-pulse 1.6s ease-in-out infinite;
+}
+
+/* "!" badge pinned to the ring's top-right corner; yellow from 75%, red
+   once the window is exceeded (donut also carries .cub-over then). */
+
+#claude-usage-bar .cub-donut-badge {
+  position: absolute;
+  top: -4px;
+  left: 22px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--cub-amber);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--cub-panel-bg);
+  pointer-events: none;
+}
+
+#claude-usage-bar .cub-donut.cub-over .cub-donut-badge {
+  background: var(--cub-red);
+}
+
+#claude-usage-bar .cub-donut-badge[hidden] {
+  display: none;
+}
+
+#claude-usage-bar.cub-inline .cub-donut-badge {
+  top: -3px;
+  left: 16px;
+  width: 11px;
+  height: 11px;
+  font-size: 8px;
+  line-height: 11px;
+}
+
+/* context tooltip: mini-panel with segmented breakdown pie + legend */
+
+#claude-usage-bar .cub-ctx-tip {
+  white-space: normal;
+  width: 258px;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+}
+
+#claude-usage-bar .cub-ctx-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 6px 0 2px;
+}
+
+#claude-usage-bar .cub-ctx-lines {
+  min-width: 0;
+}
+
+#claude-usage-bar .cub-ctx-lines > div {
+  margin: 2px 0;
+}
+
+#claude-usage-bar .cub-break {
+  flex: none;
+  width: 54px;
+  height: 54px;
+}
+
+#claude-usage-bar .cub-break-track {
+  stroke: var(--cub-bg-track);
+}
+
+#claude-usage-bar .cub-break [data-seg],
+#claude-usage-bar .cub-cat-dot,
+#claude-usage-bar .cub-cat-fill {
+  transition: all 0.3s ease;
+}
+
+#claude-usage-bar [data-seg="user"] { stroke: var(--cub-cat-user); }
+#claude-usage-bar [data-seg="assistant"] { stroke: var(--cub-cat-assistant); }
+#claude-usage-bar [data-seg="thinking"] { stroke: var(--cub-cat-thinking); }
+#claude-usage-bar [data-seg="tools"] { stroke: var(--cub-cat-tools); }
+#claude-usage-bar [data-seg="files"] { stroke: var(--cub-cat-files); }
+
+#claude-usage-bar .cub-cats {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--cub-border);
+}
+
+#claude-usage-bar .cub-cat {
+  margin: 5px 0;
+}
+
+#claude-usage-bar .cub-cat-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+#claude-usage-bar .cub-cat-val {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--cub-fg-muted);
+}
+
+#claude-usage-bar .cub-cat-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+
+#claude-usage-bar .cub-cat[data-cat="user"] .cub-cat-dot,
+#claude-usage-bar .cub-cat[data-cat="user"] .cub-cat-fill { background: var(--cub-cat-user); }
+#claude-usage-bar .cub-cat[data-cat="assistant"] .cub-cat-dot,
+#claude-usage-bar .cub-cat[data-cat="assistant"] .cub-cat-fill { background: var(--cub-cat-assistant); }
+#claude-usage-bar .cub-cat[data-cat="thinking"] .cub-cat-dot,
+#claude-usage-bar .cub-cat[data-cat="thinking"] .cub-cat-fill { background: var(--cub-cat-thinking); }
+#claude-usage-bar .cub-cat[data-cat="tools"] .cub-cat-dot,
+#claude-usage-bar .cub-cat[data-cat="tools"] .cub-cat-fill { background: var(--cub-cat-tools); }
+#claude-usage-bar .cub-cat[data-cat="files"] .cub-cat-dot,
+#claude-usage-bar .cub-cat[data-cat="files"] .cub-cat-fill { background: var(--cub-cat-files); }
+
+#claude-usage-bar .cub-cat-track {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--cub-bg-track);
+  overflow: hidden;
+}
+
+#claude-usage-bar .cub-cat-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+}
+
+@keyframes cub-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* Advice line: yellow with "!" icon from 75%, red once over the window. */
+
+#claude-usage-bar .cub-tooltip .cub-advice {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--cub-border);
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: normal;
+  color: var(--cub-amber);
+}
+
+/* flex text children refuse to wrap without an explicit min-width */
+#claude-usage-bar .cub-tooltip .cub-advice > span:last-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+#claude-usage-bar .cub-advice-icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--cub-amber);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+}
+
+#claude-usage-bar .cub-donut.cub-over .cub-tooltip .cub-advice {
+  color: var(--cub-red);
+}
+
+#claude-usage-bar .cub-donut.cub-over .cub-advice-icon {
+  background: var(--cub-red);
+}
+
+#claude-usage-bar .cub-tooltip .cub-advice[hidden] {
+  display: none;
+}
+
 #claude-usage-bar .cub-donut-pct {
   color: var(--cub-fg);
   min-width: 30px;
@@ -365,4 +591,15 @@
 #claude-usage-bar.cub-inline .cub-tooltip {
   position: fixed;
   z-index: 99999;
+}
+
+/* the fixed-position card renders smaller in the composer, so give the
+   breakdown pie more room there */
+#claude-usage-bar.cub-inline .cub-ctx-tip {
+  width: 288px;
+}
+
+#claude-usage-bar.cub-inline .cub-ctx-tip .cub-break {
+  width: 84px;
+  height: 84px;
 }

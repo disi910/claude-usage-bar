@@ -1,8 +1,16 @@
 (() => {
   const POLL_MS = 30 * 1000;
   const CACHE_TTL_MS = 5 * 60 * 1000;
-  const CONTEXT_WINDOW = 200_000;
-  const CHARS_PER_TOKEN = 4;
+  const DEFAULT_CONTEXT_WINDOW = 200_000;
+
+  // Heuristic tokenizer coefficients. CJK scripts tokenize near one token per
+  // character; spaced scripts near 1.3 tokens per word; long unspaced runs
+  // (code, URLs) split roughly every 3.5 characters.
+  const TOKENS_PER_WORD = 1.32;
+  const TOKENS_PER_CJK_CHAR = 1.0;
+  const LONG_WORD_CHARS = 3.5;
+  const MSG_OVERHEAD_TOKENS = 6;
+  const IMAGE_TOKENS = 1500;
 
   let orgId = null;
   let root = null;
@@ -29,6 +37,7 @@
 
   // ---------- API ----------
 
+  let orgInfo = null;
   async function discoverOrgId() {
     if (orgId) return orgId;
     try {
@@ -36,6 +45,7 @@
       if (!res.ok) return null;
       const orgs = await res.json();
       if (Array.isArray(orgs) && orgs.length > 0) {
+        orgInfo = orgs[0];
         orgId = orgs[0].uuid || orgs[0].id;
         return orgId;
       }
@@ -43,6 +53,18 @@
       console.warn("[usage-bar] org discovery failed", e);
     }
     return null;
+  }
+
+  // Paid plans get larger context windows on claude.ai. The org payload
+  // advertises the plan through capability/tier strings.
+  function isPaidPlan() {
+    if (!orgInfo) return false;
+    const fields = []
+      .concat(Array.isArray(orgInfo.capabilities) ? orgInfo.capabilities : [])
+      .concat([orgInfo.rate_limit_tier, orgInfo.billing_type, orgInfo.plan_type, orgInfo.subscription_tier]);
+    return fields.some(
+      (f) => typeof f === "string" && /pro|max|team|enterprise|raven/i.test(f)
+    );
   }
 
   async function fetchUsage() {
@@ -65,35 +87,43 @@
     return m ? m[1] : null;
   }
 
-  let lastConvFetch = { id: null, ts: 0, tokens: null };
-  async function fetchConversationTokens() {
+  let lastConvFetch = { id: null, ts: 0, stats: null };
+  async function fetchConversationStats() {
     const convId = currentConversationId();
     if (!convId) return null;
     const now = Date.now();
     // throttle: refetch at most every 4s for the same conversation
     if (lastConvFetch.id === convId && now - lastConvFetch.ts < 4000) {
-      return lastConvFetch.tokens;
+      return lastConvFetch.stats;
     }
     const id = await discoverOrgId();
     if (!id) return null;
     try {
-      const url = `/api/organizations/${id}/chat_conversations/${convId}?tree=true&render_all_content=true`;
+      // Query params mirror what the claude.ai frontend itself sends (July 2026).
+      const url = `/api/organizations/${id}/chat_conversations/${convId}?tree=True&rendering_mode=messages&render_all_tools=true&consistency=eventual`;
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) return null;
       const data = await res.json();
-      const tokens = extractTokensFromConversation(data);
-      lastConvFetch = { id: convId, ts: now, tokens };
-      return tokens;
+      const stats = extractConversationStats(data);
+      lastConvFetch = { id: convId, ts: now, stats };
+      return stats;
     } catch (e) {
       console.warn("[usage-bar] conversation fetch failed", e);
       return null;
     }
   }
 
-  function extractTokensFromConversation(data) {
-    // Walks the conversation tree and sums any token-count-shaped numeric fields.
-    // Defensive: Anthropic's frontend payload shape is undocumented and may change,
-    // so we look for several common field names.
+  // Returns { contextTokens, totalTokens, window, source } or null.
+  // contextTokens covers only the current branch of the conversation tree
+  // (what actually occupies the context window); totalTokens sums every
+  // message ever sent, including abandoned branches after edits/retries.
+  // The payload carries no token counts (verified July 2026), so both are
+  // heuristic estimates over the full payload text — which, unlike the DOM,
+  // includes tool calls/results, attachments and thinking blocks.
+  // Thinking from earlier turns is stripped from Claude's context, so it
+  // counts toward the total but only the latest turn's thinking counts
+  // toward context occupancy.
+  function extractConversationStats(data) {
     if (!data) return null;
     const messages =
       data.chat_messages ||
@@ -101,38 +131,157 @@
       (Array.isArray(data.tree) ? data.tree : null) ||
       [];
     if (!Array.isArray(messages) || messages.length === 0) return null;
-    let total = 0;
-    let foundAny = false;
-    for (const m of messages) {
-      const t = readMsgTokens(m);
-      if (t != null) {
-        total += t;
-        foundAny = true;
-      }
-    }
-    return foundAny ? total : null;
+
+    const branch = currentBranchMessages(data, messages);
+    const branchCats = analyzeMessages(branch, "latest");
+    const allCats = analyzeMessages(messages, "all");
+    return {
+      contextTokens: branchCats.total,
+      totalTokens: allCats.total,
+      window: detectContextWindow(data),
+      cats: branchCats,
+      source: "estimate",
+    };
   }
 
-  function readMsgTokens(m) {
-    if (!m || typeof m !== "object") return null;
+  function detectContextWindow(data) {
     const candidates = [
-      m.token_count,
-      m.num_tokens,
-      m.tokens,
-      m.input_tokens,
-      m.usage && m.usage.input_tokens,
-      m.usage && m.usage.output_tokens,
-      m.metadata && m.metadata.tokens,
+      data.context_window,
+      data.context_window_size,
+      data.model_context_window,
+      data.settings && data.settings.context_window,
     ];
-    let sum = 0;
-    let any = false;
     for (const c of candidates) {
-      if (typeof c === "number" && isFinite(c) && c >= 0) {
-        sum += c;
-        any = true;
+      if (typeof c === "number" && isFinite(c) && c >= 10_000) return c;
+    }
+    // Per the Claude help center (July 2026), on claude.ai chat:
+    //   - Sonnet 5 / Fable 5:            1M tokens on paid plans
+    //   - Opus 4.6-4.8 and Sonnet 4.6:   500k tokens on paid plans
+    //   - everything else, or free plan: 200k tokens
+    // The payload carries the model slug (e.g. "claude-sonnet-5").
+    const model = String(data.model || "");
+    if (/1m|million|extended/i.test(model)) return 1_000_000;
+    if (isPaidPlan()) {
+      if (/sonnet-5|fable-5|mythos-5/i.test(model)) return 1_000_000;
+      if (/opus-4-[678]|sonnet-4-6/i.test(model)) return 500_000;
+    }
+    return DEFAULT_CONTEXT_WINDOW;
+  }
+
+  // Follows parent links from the current leaf to isolate the active branch.
+  // Falls back to all messages when the payload has no tree metadata.
+  function currentBranchMessages(data, messages) {
+    const leaf =
+      data.current_leaf_message_uuid || data.current_leaf_uuid || data.current_leaf || null;
+    if (!leaf) return messages;
+    const byId = new Map();
+    for (const m of messages) {
+      const id = m && (m.uuid || m.id);
+      if (id) byId.set(id, m);
+    }
+    const chain = [];
+    let cur = byId.get(leaf);
+    let guard = 0;
+    while (cur && guard++ < 10_000) {
+      chain.push(cur);
+      cur = byId.get(cur.parent_message_uuid || cur.parent_uuid || cur.parent);
+    }
+    return chain.length ? chain : messages;
+  }
+
+  // Per-category token analysis. thinkingMode: "all" counts thinking in every
+  // message; "latest" counts it only for the final assistant message (prior
+  // thinking is stripped from Claude's context).
+  // Returns { user, assistant, thinking, tools, files, total }.
+  function analyzeMessages(messages, thinkingMode) {
+    const cats = { user: 0, assistant: 0, thinking: 0, tools: 0, files: 0 };
+    let lastAssistant = -1;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const m = messages[i];
+      if (m && (m.sender === "assistant" || m.role === "assistant")) {
+        lastAssistant = i;
+        break;
       }
     }
-    return any ? sum : null;
+    for (let i = 0; i < messages.length; i++) {
+      const m = messages[i];
+      if (!m || typeof m !== "object") continue;
+      const parts = collectMessageParts(m);
+      const isUser = m.sender === "human" || m.role === "user" || m.role === "human";
+      cats[isUser ? "user" : "assistant"] += MSG_OVERHEAD_TOKENS + estimateTokens(parts.text);
+      if (thinkingMode === "all" || i === lastAssistant) {
+        cats.thinking += estimateTokens(parts.thinking);
+      }
+      cats.tools += estimateTokens(parts.tools);
+      cats.files += estimateTokens(parts.files) + IMAGE_TOKENS * countMessageImages(m);
+    }
+    cats.total = cats.user + cats.assistant + cats.thinking + cats.tools + cats.files;
+    return cats;
+  }
+
+  // Splits a message's payload into token categories: visible text, thinking,
+  // tool traffic (tool_use inputs + tool_result outputs), and file/attachment
+  // content extracted server-side.
+  function collectMessageParts(m) {
+    const parts = { text: "", thinking: "", tools: "", files: "" };
+    const push = (k, s) => {
+      if (typeof s === "string" && s) parts[k] += s + "\n";
+    };
+    push("text", m.text);
+    const blocks = Array.isArray(m.content) ? m.content : [];
+    for (const b of blocks) {
+      if (!b || typeof b !== "object") continue;
+      push("thinking", b.thinking);
+      if (b.input != null && typeof b.input === "object") push("tools", JSON.stringify(b.input));
+      const isTool = b.type === "tool_use" || b.type === "tool_result";
+      push(isTool ? "tools" : "text", b.text);
+      if (typeof b.content === "string") push("tools", b.content);
+      else if (Array.isArray(b.content)) {
+        for (const n of b.content) {
+          if (n && typeof n === "object") push("tools", n.text);
+          else if (typeof n === "string") push("tools", n);
+        }
+      }
+    }
+    const atts = Array.isArray(m.attachments) ? m.attachments : [];
+    for (const a of atts) {
+      if (a && typeof a === "object") push("files", a.extracted_content || a.text);
+    }
+    return parts;
+  }
+
+  function countMessageImages(m) {
+    const files = []
+      .concat(Array.isArray(m.files) ? m.files : [])
+      .concat(Array.isArray(m.files_v2) ? m.files_v2 : []);
+    return files.filter((f) => {
+      if (!f || typeof f !== "object") return false;
+      const kind = f.file_kind || f.kind || f.type || "";
+      const name = f.file_name || f.name || "";
+      return /image/i.test(kind) || /\.(png|jpe?g|gif|webp|heic)$/i.test(name);
+    }).length;
+  }
+
+  // Word/script-aware token estimate. Considerably closer to Claude's real
+  // tokenizer than flat chars/4, especially for CJK text and code.
+  function estimateTokens(text) {
+    if (!text) return 0;
+    const cjkRe = /[\u3000-\u9fff\uac00-\ud7af\u3040-\u30ff\uf900-\ufaff]/g;
+    const cjk = (text.match(cjkRe) || []).length;
+    const rest = text.replace(cjkRe, " ");
+    let t = cjk * TOKENS_PER_CJK_CHAR;
+    const words = rest.match(/\S+/g) || [];
+    for (const w of words) {
+      if (/^\d+$/.test(w)) {
+        // Digit runs tokenize in small groups (~2-3 digits per token).
+        t += Math.max(1, w.length / 2.7);
+      } else if (w.length <= 9) {
+        t += TOKENS_PER_WORD;
+      } else {
+        t += w.length / LONG_WORD_CHARS;
+      }
+    }
+    return Math.round(t);
   }
 
   // ---------- formatting ----------
@@ -204,7 +353,17 @@
         </div>`;
   }
 
+  const CAT_ORDER = ["user", "assistant", "thinking", "tools", "files"];
+
   function donutTemplate() {
+    const catRow = (key, label) => `
+          <div class="cub-cat" data-cat="${key}">
+            <div class="cub-cat-head"><span class="cub-cat-dot"></span><span>${esc(label)}</span><span class="cub-cat-val">0</span></div>
+            <div class="cub-cat-track"><div class="cub-cat-fill"></div></div>
+          </div>`;
+    // r = 100 / 2π so the circumference is exactly 100 and dasharray works in %.
+    const seg = (key) => `<circle data-seg="${key}" cx="18" cy="18" r="15.9155" fill="none"
+            stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="25"></circle>`;
     return `
       <div class="cub-donut" data-cub-donut tabindex="0" aria-label="${esc(t("contextAriaLabel"))}">
         <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
@@ -213,12 +372,29 @@
                   stroke-linecap="round" stroke-dasharray="81.68" stroke-dashoffset="81.68"
                   transform="rotate(-90 16 16)"></circle>
         </svg>
+        <span class="cub-donut-badge" hidden>!</span>
         <span class="cub-donut-pct">0%</span>
-        <div class="cub-tooltip" role="tooltip">
+        <div class="cub-tooltip cub-ctx-tip" role="tooltip">
           <div>${esc(t("contextTokenUsage"))}</div>
-          <div data-tip="pct">${esc(t("pctOfContext", ["0"]))}</div>
-          <div data-tip="ctx">${esc(t("ctxLength", ["0"]))}</div>
-          <div data-tip="total">${esc(t("totalTokens", ["0"]))}</div>
+          <div class="cub-ctx-main">
+            <svg class="cub-break" viewBox="0 0 36 36" aria-hidden="true">
+              <circle class="cub-break-track" cx="18" cy="18" r="15.9155" fill="none" stroke-width="4"></circle>
+              ${CAT_ORDER.map(seg).join("")}
+            </svg>
+            <div class="cub-ctx-lines">
+              <div data-tip="pct">${esc(t("pctOfContext", ["0"]))}</div>
+              <div data-tip="ctx">${esc(t("ctxLength", ["0", "200k"]))}</div>
+              <div data-tip="total">${esc(t("totalTokens", ["0"]))}</div>
+            </div>
+          </div>
+          <div class="cub-cats">
+            ${catRow("user", t("catYou"))}
+            ${catRow("assistant", t("catClaude"))}
+            ${catRow("thinking", t("catThinking"))}
+            ${catRow("tools", t("catTools"))}
+            ${catRow("files", t("catFiles"))}
+          </div>
+          <div class="cub-advice" data-tip="advice" hidden><span class="cub-advice-icon">!</span><span>${esc(t("ctxAdvice"))}</span></div>
         </div>
       </div>`;
   }
@@ -395,7 +571,9 @@
     const meta = row.querySelector(".cub-panel-meta");
     const fillEl = row.querySelector(".cub-panel-fill");
     if (pct == null) {
-      meta.textContent = "—";
+      // Row absent from the usage payload (plan feature not in use):
+      // show an explicit zero state instead of a bare dash.
+      meta.textContent = t("notUsed");
       fillEl.style.width = "0%";
       return;
     }
@@ -443,29 +621,75 @@
     return text;
   }
 
-  function paintContext(tokens, source) {
+  function paintContext(contextTokens, totalTokens, win, cats) {
     if (!root) return;
-    const pct = Math.max(0, Math.min(100, (tokens / CONTEXT_WINDOW) * 100));
+    const pct = Math.max(0, Math.min(100, (contextTokens / win) * 100));
     const arc = root.querySelector(".cub-donut-arc");
     const circumference = 2 * Math.PI * 13;
     if (arc) arc.setAttribute("stroke-dashoffset", String(circumference * (1 - pct / 100)));
     if (donutPct) donutPct.textContent = `${Math.round(pct)}%`;
-    const tk = formatTokens(tokens);
-    const suffix = source === "estimate" ? t("estimateSuffix") : "";
-    setTip(donutTip, "pct", t("pctOfContext", [String(Math.round(pct))]) + suffix);
-    setTip(donutTip, "ctx", t("ctxLength", [tk]));
-    setTip(donutTip, "total", t("totalTokens", [tk]) + suffix);
+    setTip(donutTip, "pct", t("pctOfContext", [String(Math.round(pct))]));
+    setTip(donutTip, "ctx", t("ctxLength", [formatTokens(contextTokens), formatTokens(win)]));
+    setTip(donutTip, "total", t("totalTokens", [formatTokens(totalTokens)]));
+    // Ring color: green below 50%, yellow below 75%, red from 75% up.
+    // Alerts ("!" badge + advice line): yellow from 75%, red past 100%.
+    const over = contextTokens > win;
+    donut.classList.toggle("cub-green", pct < 50);
+    donut.classList.toggle("cub-yellow", pct >= 50 && pct < 75);
+    donut.classList.toggle("cub-red", pct >= 75);
+    donut.classList.toggle("cub-over", over);
+    const alert = pct >= 75;
+    const badge = donut.querySelector(".cub-donut-badge");
+    if (badge) badge.hidden = !alert;
+    const advice = donutTip && donutTip.querySelector('[data-tip="advice"]');
+    if (advice) advice.hidden = !alert;
+    if (cats) paintBreakdown(cats, win);
+  }
+
+  // Segmented hollow pie + legend rows showing where the context tokens go.
+  // Segments are proportional to the WHOLE window, so a quarter-full context
+  // fills a quarter of the ring and the rest stays on the grey track.
+  function paintBreakdown(cats, win) {
+    if (!donutTip) return;
+    const denom = Math.max(1, win);
+    let acc = 0;
+    for (const key of CAT_ORDER) {
+      const v = Math.max(0, cats[key] || 0);
+      const p = Math.max(0, Math.min(100 - acc, (v / denom) * 100));
+      const seg = donutTip.querySelector(`[data-seg="${key}"]`);
+      if (seg) {
+        seg.setAttribute("stroke-dasharray", `${p} ${100 - p}`);
+        seg.setAttribute("stroke-dashoffset", String(25 - acc));
+      }
+      const row = donutTip.querySelector(`.cub-cat[data-cat="${key}"]`);
+      if (row) {
+        row.querySelector(".cub-cat-val").textContent = formatTokens(Math.round(v));
+        row.querySelector(".cub-cat-fill").style.width = `${p}%`;
+      }
+      acc += p;
+    }
   }
 
   function renderContext() {
     if (!root) return;
-    // 1. Paint the fast heuristic immediately so the donut never goes stale
-    const text = readConversationText();
-    const estTokens = Math.ceil(text.length / CHARS_PER_TOKEN);
-    paintContext(estTokens, "estimate");
-    // 2. In the background, try the conversation API for exact numbers
-    fetchConversationTokens().then((exact) => {
-      if (typeof exact === "number" && exact > 0) paintContext(exact, "exact");
+    // API-based stats are authoritative. The DOM heuristic exists only to
+    // bootstrap a brand-new conversation before the first fetch resolves —
+    // claude.ai virtualizes long chats, so the DOM holds a fraction of the
+    // conversation and repainting from it causes wild flicker.
+    const convId = currentConversationId();
+    const cached = convId && lastConvFetch.id === convId ? lastConvFetch.stats : null;
+    if (cached && cached.contextTokens > 0) {
+      paintContext(cached.contextTokens, cached.totalTokens, cached.window, cached.cats);
+    } else {
+      const estTokens = estimateTokens(readConversationText());
+      paintContext(estTokens, estTokens, DEFAULT_CONTEXT_WINDOW, null);
+    }
+    // Refresh from the conversation API — a full-payload estimate that
+    // includes tool traffic, attachments and thinking the DOM never shows.
+    fetchConversationStats().then((stats) => {
+      if (stats && stats.contextTokens > 0) {
+        paintContext(stats.contextTokens, stats.totalTokens, stats.window, stats.cats);
+      }
     });
   }
 
@@ -525,6 +749,10 @@
       lastAssistantSignature = sig;
       cacheStartedAt = Date.now();
       renderCache();
+      // New message content landed — bust the conversation-stats throttle so
+      // the donut reflects the real token increase without a page refresh.
+      lastConvFetch.ts = 0;
+      renderContext();
     }
   }
 
@@ -551,7 +779,10 @@
     composerObserver.observe(document.body, { childList: true, subtree: true });
   }
 
+  // Position sync loop. Suspends entirely while the tab is hidden; the
+  // visibilitychange listener in start() restarts it.
   function rafLoop() {
+    if (document.hidden) return;
     if (root && document.body.contains(root)) syncPosition();
     requestAnimationFrame(rafLoop);
   }
@@ -562,6 +793,10 @@
     const data = await fetchUsage();
     if (data) lastUsage = data;
     renderUsage(lastUsage);
+    // Periodic context refresh, so the donut stays honest even when no DOM
+    // mutations fire (e.g. a long streaming reply already settled).
+    lastConvFetch.ts = 0;
+    renderContext();
   }
 
   async function start() {
@@ -571,12 +806,20 @@
 
     if (enabled) mount();
     tick();
-    setInterval(tick, POLL_MS);
     setInterval(() => {
+      if (!document.hidden) tick();
+    }, POLL_MS);
+    setInterval(() => {
+      if (document.hidden) return;
       if (lastUsage) renderUsage(lastUsage);
       renderCache();
     }, 1000);
     window.addEventListener("resize", syncPosition);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) return;
+      tick();
+      requestAnimationFrame(rafLoop);
+    });
 
     watchComposerHost();
     watchConversation();

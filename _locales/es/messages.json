@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k de longitud de contexto",
+    "message": "$TOKENS$ / $LIMIT$ de longitud de contexto",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -71,9 +74,6 @@
         "content": "$1"
       }
     }
-  },
-  "estimateSuffix": {
-    "message": " (estimación)"
   },
   "contextAriaLabel": {
     "message": "Uso de la ventana de contexto"
@@ -124,5 +124,29 @@
   },
   "positionComposer": {
     "message": "En el cuadro de chat"
+  },
+  "leaveReview": {
+    "message": "¿Te gusta? Deja una reseña"
+  },
+  "notUsed": {
+    "message": "0% · sin usar"
+  },
+  "ctxAdvice": {
+    "message": "Claude se vuelve más lento y puede olvidar mensajes anteriores. Considera empezar un chat nuevo."
+  },
+  "catYou": {
+    "message": "Tú"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "Razonamiento"
+  },
+  "catTools": {
+    "message": "Herramientas"
+  },
+  "catFiles": {
+    "message": "Archivos"
   }
 }

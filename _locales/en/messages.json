@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k context length",
+    "message": "$TOKENS$ / $LIMIT$ context length",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -71,9 +74,6 @@
         "content": "$1"
       }
     }
-  },
-  "estimateSuffix": {
-    "message": " (estimate)"
   },
   "contextAriaLabel": {
     "message": "Context window usage"
@@ -124,5 +124,29 @@
   },
   "positionComposer": {
     "message": "In chat box"
+  },
+  "leaveReview": {
+    "message": "Enjoying it? Leave a review"
+  },
+  "notUsed": {
+    "message": "0% · unused"
+  },
+  "ctxAdvice": {
+    "message": "Claude gets slower and may drop earlier messages. Consider starting a new chat."
+  },
+  "catYou": {
+    "message": "You"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "Thinking"
+  },
+  "catTools": {
+    "message": "Tools"
+  },
+  "catFiles": {
+    "message": "Files"
   }
 }

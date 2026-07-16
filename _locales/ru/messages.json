@@ -57,10 +57,13 @@
     }
   },
   "ctxLength": {
-    "message": "$TOKENS$ / 200k длины контекста",
+    "message": "$TOKENS$ / $LIMIT$ длины контекста",
     "placeholders": {
       "tokens": {
         "content": "$1"
+      },
+      "limit": {
+        "content": "$2"
       }
     }
   },
@@ -71,9 +74,6 @@
         "content": "$1"
       }
     }
-  },
-  "estimateSuffix": {
-    "message": " (оценка)"
   },
   "contextAriaLabel": {
     "message": "Использование окна контекста"
@@ -124,5 +124,29 @@
   },
   "positionComposer": {
     "message": "В поле чата"
+  },
+  "leaveReview": {
+    "message": "Нравится? Оставьте отзыв"
+  },
+  "notUsed": {
+    "message": "0% · не используется"
+  },
+  "ctxAdvice": {
+    "message": "Claude замедляется и может терять ранние сообщения. Лучше начать новый чат."
+  },
+  "catYou": {
+    "message": "Вы"
+  },
+  "catClaude": {
+    "message": "Claude"
+  },
+  "catThinking": {
+    "message": "Размышления"
+  },
+  "catTools": {
+    "message": "Инструменты"
+  },
+  "catFiles": {
+    "message": "Файлы"
   }
 }
