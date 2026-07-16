@@ -334,6 +334,8 @@
 
 #claude-usage-bar .cub-break {
   flex: none;
+  width: 60px;
+  height: 60px;
 }
 
 #claude-usage-bar .cub-break-track {
@@ -594,10 +596,10 @@
 /* the fixed-position card renders smaller in the composer, so give the
    breakdown pie more room there */
 #claude-usage-bar.cub-inline .cub-ctx-tip {
-  width: 276px;
+  width: 288px;
 }
 
-#claude-usage-bar.cub-inline .cub-break {
-  width: 76px;
-  height: 76px;
+#claude-usage-bar.cub-inline .cub-ctx-tip .cub-break {
+  width: 84px;
+  height: 84px;
 }

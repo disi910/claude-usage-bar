@@ -377,7 +377,7 @@
         <div class="cub-tooltip cub-ctx-tip" role="tooltip">
           <div>${esc(t("contextTokenUsage"))}</div>
           <div class="cub-ctx-main">
-            <svg class="cub-break" viewBox="0 0 36 36" width="56" height="56" aria-hidden="true">
+            <svg class="cub-break" viewBox="0 0 36 36" aria-hidden="true">
               <circle class="cub-break-track" cx="18" cy="18" r="15.9155" fill="none" stroke-width="4"></circle>
               ${CAT_ORDER.map(seg).join("")}
             </svg>
@@ -643,17 +643,19 @@
     if (badge) badge.hidden = !alert;
     const advice = donutTip && donutTip.querySelector('[data-tip="advice"]');
     if (advice) advice.hidden = !alert;
-    if (cats) paintBreakdown(cats, contextTokens);
+    if (cats) paintBreakdown(cats, win);
   }
 
   // Segmented hollow pie + legend rows showing where the context tokens go.
-  function paintBreakdown(cats, contextTokens) {
+  // Segments are proportional to the WHOLE window, so a quarter-full context
+  // fills a quarter of the ring and the rest stays on the grey track.
+  function paintBreakdown(cats, win) {
     if (!donutTip) return;
-    const denom = Math.max(1, contextTokens);
+    const denom = Math.max(1, win);
     let acc = 0;
     for (const key of CAT_ORDER) {
       const v = Math.max(0, cats[key] || 0);
-      const p = Math.min(100, (v / denom) * 100);
+      const p = Math.max(0, Math.min(100 - acc, (v / denom) * 100));
       const seg = donutTip.querySelector(`[data-seg="${key}"]`);
       if (seg) {
         seg.setAttribute("stroke-dasharray", `${p} ${100 - p}`);
