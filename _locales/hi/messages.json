@@ -46,7 +46,7 @@
     }
   },
   "contextTokenUsage": {
-    "message": "कॉन्टेक्स्ट और टोकन उपयोग:"
+    "message": "कॉन्टेक्स्ट और टोकन उपयोग"
   },
   "pctOfContext": {
     "message": "कॉन्टेक्स्ट विंडो का $PCT$% उपयोग हुआ",

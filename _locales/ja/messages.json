@@ -46,7 +46,7 @@
     }
   },
   "contextTokenUsage": {
-    "message": "コンテキストとトークン使用量："
+    "message": "コンテキストとトークン使用量"
   },
   "pctOfContext": {
     "message": "コンテキストウィンドウの $PCT$% を使用中",

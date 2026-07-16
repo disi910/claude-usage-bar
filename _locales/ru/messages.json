@@ -46,7 +46,7 @@
     }
   },
   "contextTokenUsage": {
-    "message": "Контекст и токены:"
+    "message": "Контекст и токены"
   },
   "pctOfContext": {
     "message": "$PCT$% окна контекста использовано",

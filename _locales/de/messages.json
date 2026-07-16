@@ -46,7 +46,7 @@
     }
   },
   "contextTokenUsage": {
-    "message": "Kontext- & Token-Nutzung:"
+    "message": "Kontext- & Token-Nutzung"
   },
   "pctOfContext": {
     "message": "$PCT$ % des Kontextfensters belegt",

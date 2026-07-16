@@ -317,6 +317,16 @@
   overflow-wrap: break-word;
 }
 
+/* header matches the plan panel's PLAN USAGE label */
+#claude-usage-bar .cub-ctx-tip > div:first-child {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cub-fg-muted);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
 #claude-usage-bar .cub-ctx-main {
   display: flex;
   align-items: center;

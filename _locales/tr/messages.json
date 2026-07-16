@@ -46,7 +46,7 @@
     }
   },
   "contextTokenUsage": {
-    "message": "Bağlam ve token kullanımı:"
+    "message": "Bağlam ve token kullanımı"
   },
   "pctOfContext": {
     "message": "Bağlam penceresinin %$PCT$ kadarı kullanıldı",

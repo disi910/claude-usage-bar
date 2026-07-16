@@ -46,7 +46,7 @@
     }
   },
   "contextTokenUsage": {
-    "message": "Uso de contexto e tokens:"
+    "message": "Uso de contexto e tokens"
   },
   "pctOfContext": {
     "message": "$PCT$% da janela de contexto usada",

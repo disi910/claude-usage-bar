@@ -46,7 +46,7 @@
     }
   },
   "contextTokenUsage": {
-    "message": "컨텍스트 및 토큰 사용량:"
+    "message": "컨텍스트 및 토큰 사용량"
   },
   "pctOfContext": {
     "message": "컨텍스트 창의 $PCT$% 사용 중",

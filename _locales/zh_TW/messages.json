@@ -46,7 +46,7 @@
     }
   },
   "contextTokenUsage": {
-    "message": "上下文與 Token 用量："
+    "message": "上下文與 Token 用量"
   },
   "pctOfContext": {
     "message": "已使用上下文視窗的 $PCT$%",
