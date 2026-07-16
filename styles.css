@@ -312,7 +312,7 @@
 
 #claude-usage-bar .cub-ctx-tip {
   white-space: normal;
-  width: 252px;
+  width: 258px;
   box-sizing: border-box;
   overflow-wrap: break-word;
 }
@@ -334,8 +334,8 @@
 
 #claude-usage-bar .cub-break {
   flex: none;
-  width: 60px;
-  height: 60px;
+  width: 54px;
+  height: 54px;
 }
 
 #claude-usage-bar .cub-break-track {
