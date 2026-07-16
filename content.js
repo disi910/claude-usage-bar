@@ -37,6 +37,7 @@
 
   // ---------- API ----------
 
+  let orgInfo = null;
   async function discoverOrgId() {
     if (orgId) return orgId;
     try {
@@ -44,6 +45,7 @@
       if (!res.ok) return null;
       const orgs = await res.json();
       if (Array.isArray(orgs) && orgs.length > 0) {
+        orgInfo = orgs[0];
         orgId = orgs[0].uuid || orgs[0].id;
         return orgId;
       }
@@ -51,6 +53,18 @@
       console.warn("[usage-bar] org discovery failed", e);
     }
     return null;
+  }
+
+  // Paid plans get larger context windows on claude.ai. The org payload
+  // advertises the plan through capability/tier strings.
+  function isPaidPlan() {
+    if (!orgInfo) return false;
+    const fields = []
+      .concat(Array.isArray(orgInfo.capabilities) ? orgInfo.capabilities : [])
+      .concat([orgInfo.rate_limit_tier, orgInfo.billing_type, orgInfo.plan_type, orgInfo.subscription_tier]);
+    return fields.some(
+      (f) => typeof f === "string" && /pro|max|team|enterprise|raven/i.test(f)
+    );
   }
 
   async function fetchUsage() {
@@ -140,12 +154,17 @@
     for (const c of candidates) {
       if (typeof c === "number" && isFinite(c) && c >= 10_000) return c;
     }
-    // The payload carries the model slug (e.g. "claude-sonnet-5"). Every
-    // current claude.ai model runs a 200k window; extended-context variants
-    // advertise it in the slug, so key off that.
+    // Per the Claude help center (July 2026), on claude.ai chat:
+    //   - Sonnet 5 / Fable 5:            1M tokens on paid plans
+    //   - Opus 4.6-4.8 and Sonnet 4.6:   500k tokens on paid plans
+    //   - everything else, or free plan: 200k tokens
+    // The payload carries the model slug (e.g. "claude-sonnet-5").
     const model = String(data.model || "");
     if (/1m|million|extended/i.test(model)) return 1_000_000;
-    if (/500k/i.test(model)) return 500_000;
+    if (isPaidPlan()) {
+      if (/sonnet-5|fable-5|mythos-5/i.test(model)) return 1_000_000;
+      if (/opus-4-[678]|sonnet-4-6/i.test(model)) return 500_000;
+    }
     return DEFAULT_CONTEXT_WINDOW;
   }
 

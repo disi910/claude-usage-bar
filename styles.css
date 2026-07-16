@@ -313,6 +313,8 @@
 #claude-usage-bar .cub-ctx-tip {
   white-space: normal;
   width: 252px;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
 }
 
 #claude-usage-bar .cub-ctx-main {
@@ -421,7 +423,14 @@
   border-top: 1px solid var(--cub-border);
   font-weight: 600;
   line-height: 1.4;
+  white-space: normal;
   color: var(--cub-amber);
+}
+
+/* flex text children refuse to wrap without an explicit min-width */
+#claude-usage-bar .cub-tooltip .cub-advice > span:last-child {
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 #claude-usage-bar .cub-advice-icon {
@@ -580,4 +589,15 @@
 #claude-usage-bar.cub-inline .cub-tooltip {
   position: fixed;
   z-index: 99999;
+}
+
+/* the fixed-position card renders smaller in the composer, so give the
+   breakdown pie more room there */
+#claude-usage-bar.cub-inline .cub-ctx-tip {
+  width: 276px;
+}
+
+#claude-usage-bar.cub-inline .cub-break {
+  width: 76px;
+  height: 76px;
 }

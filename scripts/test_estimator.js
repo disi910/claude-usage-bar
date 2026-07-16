@@ -23,6 +23,7 @@ const data = JSON.parse(fs.readFileSync(payloadPath, "utf8"));
 const src = fs.readFileSync(path.join(__dirname, "..", "content.js"), "utf8");
 const names = [
   "extractConversationStats",
+  "isPaidPlan",
   "detectContextWindow",
   "currentBranchMessages",
   "analyzeMessages",
@@ -35,7 +36,10 @@ if (!constMatch) {
   console.error("could not extract constants from content.js");
   process.exit(1);
 }
+// isPaidPlan reads module state that doesn't exist outside the extension;
+// default to a paid org here (set CUB_FREE=1 to test the free-plan mapping).
 let code = constMatch[0] + "\n";
+code += `let orgInfo = { capabilities: [${process.env.CUB_FREE ? "" : '"claude_pro"'}] };\n`;
 for (const n of names) {
   const re = new RegExp(`  (?:// [^\\n]*\\n  )*function ${n}\\([\\s\\S]*?\\n  }\\n`);
   const m = src.match(re);
