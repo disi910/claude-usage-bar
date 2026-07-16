@@ -32,13 +32,18 @@ INK = (31, 27, 20)            # --cub-fg
 PAPER = (245, 244, 238)       # --cub-bg (no alpha for export)
 
 
+def sharpen(img: Image.Image) -> Image.Image:
+    """Gentle unsharp mask to recover crispness lost in heavy downscaling."""
+    return img.filter(ImageFilter.UnsharpMask(radius=1.2, percent=70, threshold=2))
+
+
 def fit_to_canvas(src: Image.Image, w: int, h: int, bg=PAPER) -> Image.Image:
     """Resize src to fit inside (w,h), letterbox-pad on bg to exact size, return RGB."""
     src = src.convert("RGB")
     sw, sh = src.size
     scale = min(w / sw, h / sh)
     new_w, new_h = max(1, int(sw * scale)), max(1, int(sh * scale))
-    resized = src.resize((new_w, new_h), Image.LANCZOS)
+    resized = sharpen(src.resize((new_w, new_h), Image.LANCZOS))
     canvas = Image.new("RGB", (w, h), bg)
     canvas.paste(resized, ((w - new_w) // 2, (h - new_h) // 2))
     return canvas
@@ -94,7 +99,7 @@ def build_promo_tile(src_path: Path, out_path: Path) -> None:
         new_w = PROMO_W - 220
         scale = new_w / cw
         new_h = int(ch * scale)
-    crop_resized = cropped.resize((new_w, new_h), Image.LANCZOS)
+    crop_resized = sharpen(cropped.resize((new_w, new_h), Image.LANCZOS))
 
     # Position on the right
     paste_x = PROMO_W - new_w - 16
@@ -133,27 +138,34 @@ def build_marquee(src_path: Path, out_path: Path) -> None:
     overlay = Image.new("RGB", (MARQUEE_W, MARQUEE_H), PAPER)
     bg = Image.blend(bg, overlay, alpha=0.82)
 
-    # Screenshot fills the right ~60%, letterboxed with a thin coral frame.
-    shot_w = int(MARQUEE_W * 0.58)
+    draw = ImageDraw.Draw(bg)
+    title_font = load_font(56)
+    sub_font = load_font(26)
+    title_lines = ["Your Claude usage,", "at a glance."]
+    sub = "Plan limits · context window · prompt cache"
+
+    # Measure the text block first so the screenshot never overlaps it.
+    x = 56
+    text_right = x + max(
+        max(text_size(draw, line, title_font)[0] for line in title_lines),
+        text_size(draw, sub, sub_font)[0],
+    )
+    shot_left = text_right + 48
+    shot_w = MARQUEE_W - shot_left - 44
     shot_h = MARQUEE_H - 80
     shot = fit_to_canvas(src, shot_w, shot_h)
     frame = Image.new("RGB", (shot_w + 4, shot_h + 4), CORAL)
     frame.paste(shot, (2, 2))
-    bg.paste(frame, (MARQUEE_W - shot_w - 44, (MARQUEE_H - shot_h) // 2 - 2))
+    bg.paste(frame, (shot_left, (MARQUEE_H - shot_h) // 2 - 2))
 
-    draw = ImageDraw.Draw(bg)
-    title_font = load_font(56)
-    sub_font = load_font(26)
-
-    x = 56
     y = 150
-    for line in ["Your Claude usage,", "at a glance."]:
+    for line in title_lines:
         draw.text((x, y), line, fill=INK, font=title_font)
         _, lh = text_size(draw, line, title_font)
         y += lh + 12
 
     y += 18
-    draw.text((x, y), "Plan limits · context window · prompt cache", fill=CORAL_DEEP, font=sub_font)
+    draw.text((x, y), sub, fill=CORAL_DEEP, font=sub_font)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     bg.save(out_path, format="PNG", optimize=True)
