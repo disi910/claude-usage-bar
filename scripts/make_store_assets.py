@@ -72,10 +72,10 @@ def build_promo_tile(src_path: Path, out_path: Path) -> None:
     # Screenshots are ~2940x1660; the bar sits ~y=20..70 and the hover panel
     # extends to ~y=420. We crop just that band, narrow horizontally so the
     # panel dominates the frame.
-    crop_l = int(sw * 0.28)
+    crop_l = int(sw * 0.40)
     crop_t = 0
-    crop_r = int(sw * 0.72)
-    crop_b = int(sh * 0.32)
+    crop_r = int(sw * 0.60)
+    crop_b = int(sh * 0.24)
     cropped = src.crop((crop_l, crop_t, crop_r, crop_b))
 
     # Soft blur + tint background, then composite the crop centered.
