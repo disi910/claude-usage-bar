@@ -15,6 +15,8 @@
   let orgId = null;
   let root = null;
   let bar, fill, pctLabel, resetLabel, panel, donut, donutPct, donutTip, hourglass, hourglassLabel, hourglassTip;
+  // The composer box the inline bar lives in; floating layers align to it.
+  let composerSurface = null;
   let lastUsage = null;
   let enabled = true;
   let position = "top"; // "top" | "composer"
@@ -513,6 +515,7 @@
     if (position === "composer") {
       const surface = findComposerSurface();
       if (surface) {
+        composerSurface = surface;
         root = buildRoot("inline");
         bindRefs();
         mountedMode = "inline";
@@ -543,12 +546,28 @@
     renderCache();
   }
 
+  // Floating layers align to the composer box, not to their trigger. Centring
+  // on the trigger pushed the context tooltip, whose ring sits at the far
+  // right, off the edge of the window.
   function anchorFloating(trigger, el) {
     if (!el || mountedMode !== "inline") return;
     const r = trigger.getBoundingClientRect();
-    el.style.left = `${r.left + r.width / 2}px`;
     el.style.top = "auto";
     el.style.bottom = `${window.innerHeight - r.top + 10}px`;
+
+    const box =
+      composerSurface && composerSurface.isConnected
+        ? composerSurface.getBoundingClientRect()
+        : null;
+    if (!box || box.width === 0) {
+      el.style.left = `${r.left + r.width / 2}px`;
+      return;
+    }
+
+    // Left edge flush with the box, and capped so the right edge cannot pass
+    // the box either. The CSS centring transform is cancelled for inline mode.
+    el.style.maxWidth = `${Math.round(box.width)}px`;
+    el.style.left = `${Math.round(box.left)}px`;
   }
 
   function syncPosition() {
@@ -566,6 +585,7 @@
   }
 
   function unmount() {
+    composerSurface = null;
     if (root && root.parentElement) root.parentElement.removeChild(root);
     root = null;
     mountedMode = null;

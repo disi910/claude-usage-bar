@@ -610,6 +610,22 @@
   z-index: 99999;
 }
 
+/* Inline layers are positioned by JS against the composer box, so they must
+   not also be centred on their trigger. */
+#claude-usage-bar.cub-inline .cub-panel,
+#claude-usage-bar.cub-inline .cub-tooltip {
+  transform: translateY(4px);
+}
+
+#claude-usage-bar.cub-inline .cub-bar:hover .cub-panel,
+#claude-usage-bar.cub-inline .cub-bar:focus-within .cub-panel,
+#claude-usage-bar.cub-inline .cub-panel:hover,
+#claude-usage-bar.cub-inline .cub-donut:hover .cub-tooltip,
+#claude-usage-bar.cub-inline .cub-donut:focus-visible .cub-tooltip,
+#claude-usage-bar.cub-inline .cub-hourglass:hover .cub-tooltip {
+  transform: translateY(0);
+}
+
 /* the fixed-position card renders smaller in the composer, so give the
    breakdown pie more room there */
 #claude-usage-bar.cub-inline .cub-ctx-tip {
