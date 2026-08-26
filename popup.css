@@ -26,32 +26,16 @@
   box-sizing: border-box;
 }
 
-/* Chrome paints its own surface behind a popup and gives it square corners.
-   Making html/body transparent and putting the real background on an inner
-   sheet lets the corners round. Whether the corner pixels come out fully
-   transparent depends on the Chrome build, so the sheet colour is the same
-   as the old body colour and the worst case is a square corner, not a gap. */
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: transparent;
-}
-
 body {
   width: 280px;
+  margin: 0;
+  padding: 14px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-variant-numeric: tabular-nums;
   font-size: 13px;
+  background: var(--pop-bg);
   color: var(--pop-fg);
   user-select: none;
-}
-
-.sheet {
-  width: 280px;
-  padding: 14px;
-  border-radius: 12px;
-  background: var(--pop-bg);
 }
 
 header {
