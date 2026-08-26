@@ -463,23 +463,47 @@
   // Finds the composer's bottom toolbar row (the one with the "+" button and
   // model picker). Claude.ai's DOM is undocumented, so we walk up from the
   // editor and look for a sibling row below it that contains buttons.
-  function findComposerToolbar() {
+  // Claude's composer puts its controls in a display:contents wrapper whose
+  // two children are absolutely positioned groups pinned to the bottom corners
+  // of a position:relative row. In a conversation that row is a single line
+  // shared with the text, so there is no gap to sit in. Instead the bar becomes
+  // a new first child of the element that paints the composer box: the box
+  // grows by one row and the bar reads as part of it. The control groups anchor
+  // to the inner row, not the box, so they do not move.
+  function findComposerSurface() {
     const editor = findComposerEditor();
     if (!editor) return null;
-    const eRect = editor.getBoundingClientRect();
-    if (eRect.height === 0) return null;
-    let container = editor.parentElement;
-    for (let hops = 0; container && hops < 8; hops++, container = container.parentElement) {
-      for (const child of container.children) {
-        if (child.contains(editor) || child === root) continue;
-        if (!child.querySelector("button")) continue;
-        const rect = child.getBoundingClientRect();
-        if (rect.height > 0 && rect.height < 80 && rect.top >= eRect.top) {
-          return child;
+    if (editor.getBoundingClientRect().height === 0) return null;
+
+    // The row that owns the absolutely positioned control groups.
+    let row = null;
+    let node = editor.parentElement;
+    for (let hops = 0; node && hops < 8; hops++, node = node.parentElement) {
+      if (getComputedStyle(node).position !== "relative") continue;
+      const ownsAbsoluteControls = [...node.querySelectorAll("button")].some((btn) => {
+        for (let el = btn.parentElement; el && el !== node; el = el.parentElement) {
+          if (getComputedStyle(el).position === "absolute") return true;
         }
+        return false;
+      });
+      if (ownsAbsoluteControls) {
+        row = node;
+        break;
       }
     }
-    return null;
+    if (!row) return null;
+
+    // Out to the surface that draws the box, so the bar lands inside the same
+    // rounded background instead of floating above it. Only pass through
+    // single-child wrappers, which is what separates the box from the column
+    // that also holds the disclaimer row.
+    let surface = row;
+    for (let hops = 0; hops < 4; hops++) {
+      const parent = surface.parentElement;
+      if (!parent || parent.children.length !== 1) break;
+      surface = parent;
+    }
+    return surface;
   }
 
   function mount() {
@@ -487,14 +511,13 @@
     if (root && document.body.contains(root)) return;
 
     if (position === "composer") {
-      const toolbar = findComposerToolbar();
-      if (toolbar) {
+      const surface = findComposerSurface();
+      if (surface) {
         root = buildRoot("inline");
         bindRefs();
         mountedMode = "inline";
-        // Slot in after the leading button group (the "+" button) so the
-        // widget sits between it and the model picker, like the native row.
-        toolbar.insertBefore(root, toolbar.children[1] || null);
+        // Above the text, inside the composer's own box.
+        surface.insertBefore(root, surface.firstChild);
         // The composer clips overflow, so panel/tooltips use position:fixed
         // in inline mode and get anchored to their trigger on hover.
         bar.addEventListener("mouseenter", () => anchorFloating(bar, panel));
@@ -506,7 +529,7 @@
         return;
       }
       // Composer not found (yet), fall back to the top overlay. The
-      // composer observer upgrades us to inline once the toolbar appears.
+      // composer observer upgrades us to inline once the composer appears.
     }
 
     root = buildRoot("top");
@@ -792,7 +815,7 @@
         pending = null;
         if (!root || !document.body.contains(root)) {
           mount();
-        } else if (position === "composer" && mountedMode === "top" && findComposerToolbar()) {
+        } else if (position === "composer" && mountedMode === "top" && findComposerSurface()) {
           // We fell back to the top overlay before the composer existed,
           // upgrade to the inline placement now that it does.
           unmount();

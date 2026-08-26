@@ -558,18 +558,22 @@
 
 /* inline (in-chat-box) placement */
 
+/* A full-width row above the text, inside the composer's own box. Inherits
+   the box's horizontal padding, so it lines up with the text under it. */
 #claude-usage-bar.cub-inline {
   position: relative;
   top: auto;
   left: auto;
+  bottom: auto;
   transform: none;
-  flex: 1 1 auto;
-  min-width: 120px;
-  max-width: 420px;
-  align-self: center;
-  margin: 0 12px;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  align-self: auto;
+  margin: 0 0 8px;
+  padding: 0;
   gap: 8px;
-  z-index: 1;
+  z-index: 2;
 }
 
 #claude-usage-bar.cub-inline > .cub-pct {
