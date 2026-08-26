@@ -53,7 +53,7 @@ code += "return extractConversationStats(data);";
 
 const stats = new Function("data", code)(data);
 if (!stats) {
-  console.error("no stats extracted — empty conversation?");
+  console.error("no stats extracted, empty conversation?");
   process.exit(1);
 }
 const pct = ((stats.contextTokens / stats.window) * 100).toFixed(1);

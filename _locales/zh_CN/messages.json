@@ -3,7 +3,7 @@
     "message": "Claude 用量条"
   },
   "extDesc": {
-    "message": "在 claude.ai 直接查看套餐用量、上下文窗口和提示缓存倒计时——显示在页面顶部或聊天框内。"
+    "message": "在 claude.ai 直接查看套餐用量、上下文窗口和提示缓存倒计时，显示在页面顶部或聊天框内。"
   },
   "planUsage": {
     "message": "套餐用量"
@@ -127,6 +127,9 @@
   },
   "leaveReview": {
     "message": "喜欢吗？留个评价吧"
+  },
+  "openClaudeForUsage": {
+    "message": "打开 claude.ai 查看你的用量"
   },
   "notUsed": {
     "message": "0% · 未使用"

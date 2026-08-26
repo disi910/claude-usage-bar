@@ -6,11 +6,39 @@
 </head>
 <body>
   <header>
-    <img src="icon48.png" width="20" height="20" alt="">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+      <rect x="0" y="0" width="32" height="32" rx="7" fill="#D97757"></rect>
+      <circle cx="16" cy="16" r="11" fill="none" stroke="#F5F4EE" stroke-width="4" opacity="0.28"></circle>
+      <circle cx="16" cy="16" r="11" fill="none" stroke="#F5F4EE" stroke-width="4" stroke-linecap="round"
+              stroke-dasharray="69.115" stroke-dashoffset="10.367" transform="rotate(-90 16 16)"></circle>
+    </svg>
     <h1 data-i18n="extName"></h1>
   </header>
 
-  <label class="row toggle-row">
+  <div class="usage" id="usage" hidden>
+    <div class="usage-row" data-row="five_hour">
+      <div class="usage-head">
+        <span class="usage-label" data-i18n="fiveHourLimit"></span>
+        <span class="usage-pct">— %</span>
+      </div>
+      <div class="usage-track"><div class="usage-fill"></div></div>
+      <div class="usage-meta"></div>
+    </div>
+    <div class="usage-row" data-row="weekly_all">
+      <div class="usage-head">
+        <span class="usage-label" data-i18n="weeklyAllModels"></span>
+        <span class="usage-pct">— %</span>
+      </div>
+      <div class="usage-track"><div class="usage-fill"></div></div>
+      <div class="usage-meta"></div>
+    </div>
+  </div>
+
+  <p class="usage-empty" id="usageEmpty" data-i18n="openClaudeForUsage"></p>
+
+  <div class="rule"></div>
+
+  <label class="toggle-row">
     <span data-i18n="showBar"></span>
     <span class="switch">
       <input type="checkbox" id="enabled">
@@ -20,29 +48,27 @@
 
   <div class="section-label" data-i18n="position"></div>
 
-  <div class="positions">
-    <label class="pos-card">
+  <div class="segmented">
+    <label class="seg">
       <input type="radio" name="position" value="top">
-      <svg viewBox="0 0 48 36" aria-hidden="true">
-        <rect x="1" y="1" width="46" height="34" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.35"></rect>
-        <rect x="8" y="5" width="32" height="4" rx="2" fill="var(--pop-coral)"></rect>
-        <rect x="8" y="24" width="32" height="7" rx="3.5" fill="none" stroke="currentColor" stroke-opacity="0.35"></rect>
+      <svg viewBox="0 0 16 12" aria-hidden="true">
+        <rect x="0.75" y="0.75" width="14.5" height="10.5" rx="2" fill="none" stroke="currentColor" stroke-opacity="0.4"></rect>
+        <rect x="3" y="2.75" width="10" height="2" rx="1" fill="var(--pop-coral)"></rect>
       </svg>
       <span data-i18n="positionTop"></span>
     </label>
-    <label class="pos-card">
+    <label class="seg">
       <input type="radio" name="position" value="composer">
-      <svg viewBox="0 0 48 36" aria-hidden="true">
-        <rect x="1" y="1" width="46" height="34" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.35"></rect>
-        <rect x="8" y="20" width="32" height="11" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.35"></rect>
-        <rect x="11" y="26" width="18" height="2.5" rx="1.25" fill="var(--pop-coral)"></rect>
-        <circle cx="35" cy="27" r="2.5" fill="none" stroke="var(--pop-coral)" stroke-width="1.5"></circle>
+      <svg viewBox="0 0 16 12" aria-hidden="true">
+        <rect x="0.75" y="0.75" width="14.5" height="10.5" rx="2" fill="none" stroke="currentColor" stroke-opacity="0.4"></rect>
+        <rect x="3" y="6.5" width="10" height="3.5" rx="1.5" fill="none" stroke="currentColor" stroke-opacity="0.4"></rect>
+        <rect x="4.25" y="7.9" width="5.5" height="1.6" rx="0.8" fill="var(--pop-coral)"></rect>
       </svg>
       <span data-i18n="positionComposer"></span>
     </label>
   </div>
 
-  <footer>
+  <footer id="reviewFooter" hidden>
     <a href="https://chromewebstore.google.com/detail/imblbfhdbdecholhjbagcjahdkhidneb/reviews"
        target="_blank" rel="noopener" data-i18n="leaveReview"></a>
   </footer>

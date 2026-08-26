@@ -118,7 +118,7 @@
   // (what actually occupies the context window); totalTokens sums every
   // message ever sent, including abandoned branches after edits/retries.
   // The payload carries no token counts (verified July 2026), so both are
-  // heuristic estimates over the full payload text — which, unlike the DOM,
+  // heuristic estimates over the full payload text, which, unlike the DOM,
   // includes tool calls/results, attachments and thinking blocks.
   // Thinking from earlier turns is stripped from Claude's context, so it
   // counts toward the total but only the latest turn's thinking counts
@@ -431,16 +431,15 @@
       ${hourglassTemplate()}
     `;
     } else {
+      // Numbers sit OUTSIDE the track: printed over the fill, their contrast
+      // changed as the fill slid underneath them.
       el.innerHTML = `
+      <span class="cub-pct">— %</span>
       <div class="cub-bar" data-cub-bar>
         <div class="cub-fill"></div>
-        <div class="cub-text">
-          <span class="cub-pct">— %</span>
-          <span class="cub-sep">·</span>
-          <span class="cub-reset">${esc(t("loading"))}</span>
-        </div>
         ${panelTemplate()}
       </div>
+      <span class="cub-reset">${esc(t("loading"))}</span>
       ${donutTemplate()}
       ${hourglassTemplate()}
     `;
@@ -506,7 +505,7 @@
         renderCache();
         return;
       }
-      // Composer not found (yet) — fall back to the top overlay. The
+      // Composer not found (yet), fall back to the top overlay. The
       // composer observer upgrades us to inline once the toolbar appears.
     }
 
@@ -607,6 +606,33 @@
     setRow("extra", rowPct(extra), rowResetMs(extra));
     const routines = pickRow(data, "seven_day_omelette", "routines", "scheduled_tasks");
     setRow("routines", rowPct(routines), rowResetMs(routines));
+
+    cacheSnapshot(fhPct, rowResetMs(fh), rowPct(weeklyAll), rowResetMs(weeklyAll));
+  }
+
+  // The popup holds no host permissions, so it cannot read the usage endpoint
+  // itself. Stash the last-known numbers where it can reach them, keeping reset
+  // times ABSOLUTE so the popup recomputes a live countdown whenever it opens.
+  let lastSnapshotKey = "";
+
+  function cacheSnapshot(fhPct, fhResetMs, weeklyPct, weeklyResetMs) {
+    const key = `${fhPct}|${weeklyPct}`;
+    if (key === lastSnapshotKey) return;  // usage polls often; storage need not
+    lastSnapshotKey = key;
+    try {
+      chrome.storage.local.set({
+        usageSnapshot: {
+          fiveHourPct: fhPct,
+          fiveHourResetAt: fhResetMs != null ? Date.now() + fhResetMs : null,
+          weeklyPct: weeklyPct,
+          weeklyResetAt: weeklyResetMs != null ? Date.now() + weeklyResetMs : null,
+          at: Date.now(),
+        },
+      });
+    } catch (e) {
+      // Extension context can be invalidated mid-session (update/reload).
+      // The bar itself keeps working; only the popup's cache goes stale.
+    }
   }
 
   function readConversationText() {
@@ -673,7 +699,7 @@
   function renderContext() {
     if (!root) return;
     // API-based stats are authoritative. The DOM heuristic exists only to
-    // bootstrap a brand-new conversation before the first fetch resolves —
+    // bootstrap a brand-new conversation before the first fetch resolves,
     // claude.ai virtualizes long chats, so the DOM holds a fraction of the
     // conversation and repainting from it causes wild flicker.
     const convId = currentConversationId();
@@ -684,7 +710,7 @@
       const estTokens = estimateTokens(readConversationText());
       paintContext(estTokens, estTokens, DEFAULT_CONTEXT_WINDOW, null);
     }
-    // Refresh from the conversation API — a full-payload estimate that
+    // Refresh from the conversation API, a full-payload estimate that
     // includes tool traffic, attachments and thinking the DOM never shows.
     fetchConversationStats().then((stats) => {
       if (stats && stats.contextTokens > 0) {
@@ -749,7 +775,7 @@
       lastAssistantSignature = sig;
       cacheStartedAt = Date.now();
       renderCache();
-      // New message content landed — bust the conversation-stats throttle so
+      // New message content landed, bust the conversation-stats throttle so
       // the donut reflects the real token increase without a page refresh.
       lastConvFetch.ts = 0;
       renderContext();
@@ -767,7 +793,7 @@
         if (!root || !document.body.contains(root)) {
           mount();
         } else if (position === "composer" && mountedMode === "top" && findComposerToolbar()) {
-          // We fell back to the top overlay before the composer existed —
+          // We fell back to the top overlay before the composer existed,
           // upgrade to the inline placement now that it does.
           unmount();
           mount();

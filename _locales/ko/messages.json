@@ -128,6 +128,9 @@
   "leaveReview": {
     "message": "마음에 드시나요? 리뷰를 남겨주세요"
   },
+  "openClaudeForUsage": {
+    "message": "claude.ai를 열면 사용량이 표시됩니다"
+  },
   "notUsed": {
     "message": "0% · 미사용"
   },

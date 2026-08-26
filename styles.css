@@ -5,11 +5,11 @@
   --cub-amber: #B45309;
   --cub-red: #C63A2F;
   --cub-green: #6E8F67;
-  --cub-cat-user: #C96442;
-  --cub-cat-assistant: #7D9B76;
-  --cub-cat-thinking: #9C87C9;
-  --cub-cat-tools: #5B8FA8;
-  --cub-cat-files: #C2A24B;
+  --cub-cat-user: #A8452F;
+  --cub-cat-assistant: #C96442;
+  --cub-cat-thinking: #D97757;
+  --cub-cat-tools: #E08E70;
+  --cub-cat-files: #E9AE95;
   --cub-bg: rgba(245, 244, 238, 0.92);
   --cub-bg-track: #E8E6DC;
   --cub-border: rgba(0, 0, 0, 0.08);
@@ -19,11 +19,13 @@
   --cub-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
 
   position: fixed;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 0 4px;
-  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
   font-size: 12px;
   color: var(--cub-fg);
   user-select: none;
@@ -35,16 +37,45 @@
   pointer-events: auto;
 }
 
+/* claude.ai sets font-family on descendants, which beats inheritance */
+#claude-usage-bar * {
+  box-sizing: border-box;
+  font-family: inherit;
+  font-variant-numeric: inherit;
+}
+
+/* Top placement: the pill now wraps the whole readout rather than being the
+   bar itself, so the numbers sit on a stable ground. */
+#claude-usage-bar:not(.cub-inline) {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--cub-bg);
+  border: 1px solid var(--cub-border);
+  backdrop-filter: blur(8px);
+}
+
+#claude-usage-bar:not(.cub-inline) > .cub-pct {
+  font-weight: 600;
+  color: var(--cub-fg);
+  white-space: nowrap;
+  min-width: 34px;
+}
+
+#claude-usage-bar:not(.cub-inline) > .cub-reset {
+  color: var(--cub-fg-muted);
+  white-space: nowrap;
+}
+
 @media (prefers-color-scheme: dark) {
   #claude-usage-bar {
     --cub-amber: #E8A33D;
     --cub-red: #E5675C;
     --cub-green: #8FB587;
-    --cub-cat-user: #D97757;
-    --cub-cat-assistant: #93B08B;
-    --cub-cat-thinking: #B3A1E0;
-    --cub-cat-tools: #7BAAC4;
-    --cub-cat-files: #D4B863;
+    --cub-cat-user: #F2B49E;
+    --cub-cat-assistant: #E08E70;
+    --cub-cat-thinking: #D97757;
+    --cub-cat-tools: #B85F42;
+    --cub-cat-files: #96442E;
     --cub-bg: rgba(44, 42, 38, 0.92);
     --cub-bg-track: #3A3631;
     --cub-border: rgba(255, 255, 255, 0.06);
@@ -61,14 +92,24 @@
   position: relative;
   flex: 1;
   display: block;
-  height: 22px;
-  border-radius: 11px;
-  background: var(--cub-bg);
-  border: 1px solid var(--cub-border);
+  height: 6px;
+  border-radius: 3px;
+  background: var(--cub-bg-track);
+  border: none;
   overflow: visible;
   cursor: default;
   color: inherit;
-  transition: box-shadow 0.15s ease;
+}
+
+/* A 6px track is a small hover target, so give it an invisible taller one. */
+#claude-usage-bar .cub-bar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -10px;
+  bottom: -10px;
+  pointer-events: auto;
 }
 
 /* Invisible bridge so cursor can travel from bar to panel without losing :hover */
@@ -87,42 +128,20 @@
   top: 100%;
 }
 
-#claude-usage-bar .cub-bar:hover {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-}
-
 #claude-usage-bar .cub-fill {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
   width: 0%;
-  border-radius: 11px;
+  border-radius: 3px;
   background: linear-gradient(90deg, var(--cub-coral) 0%, var(--cub-coral-deep) 100%);
   transition: width 0.4s ease;
-  opacity: 0.85;
   z-index: 0;
 }
 
 #claude-usage-bar .cub-bar.cub-full .cub-fill {
   background: linear-gradient(90deg, var(--cub-coral-full) 0%, #8F3E2C 100%);
-}
-
-#claude-usage-bar .cub-text {
-  position: relative;
-  z-index: 1;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-weight: 600;
-  letter-spacing: 0.1px;
-  mix-blend-mode: normal;
-}
-
-#claude-usage-bar .cub-sep {
-  opacity: 0.5;
 }
 
 
@@ -384,7 +403,6 @@
 
 #claude-usage-bar .cub-cat-val {
   margin-left: auto;
-  font-variant-numeric: tabular-nums;
   color: var(--cub-fg-muted);
 }
 
@@ -474,7 +492,6 @@
 #claude-usage-bar .cub-donut-pct {
   color: var(--cub-fg);
   min-width: 30px;
-  font-variant-numeric: tabular-nums;
 }
 
 /* hourglass */
@@ -486,7 +503,6 @@
   gap: 4px;
   padding: 0 2px;
   color: var(--cub-coral-deep);
-  font-variant-numeric: tabular-nums;
   font-weight: 600;
   font-size: 12px;
   cursor: default;
@@ -557,7 +573,6 @@
 }
 
 #claude-usage-bar.cub-inline > .cub-pct {
-  font-variant-numeric: tabular-nums;
   font-weight: 600;
   color: var(--cub-fg);
   white-space: nowrap;
@@ -570,20 +585,8 @@
   background: var(--cub-bg-track);
 }
 
-/* Taller invisible hit area so the 4px line is easy to hover */
-#claude-usage-bar.cub-inline .cub-bar::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -10px;
-  bottom: -10px;
-  pointer-events: auto;
-}
-
 #claude-usage-bar.cub-inline .cub-fill {
   border-radius: 2px;
-  opacity: 1;
 }
 
 #claude-usage-bar.cub-inline .cub-donut svg {

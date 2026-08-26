@@ -128,6 +128,9 @@
   "leaveReview": {
     "message": "¿Te gusta? Deja una reseña"
   },
+  "openClaudeForUsage": {
+    "message": "Abre claude.ai para ver tu uso"
+  },
   "notUsed": {
     "message": "0% · sin usar"
   },

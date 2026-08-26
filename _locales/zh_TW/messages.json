@@ -3,7 +3,7 @@
     "message": "Claude 用量列"
   },
   "extDesc": {
-    "message": "直接在 claude.ai 查看方案用量、上下文視窗與提示快取倒數——顯示於頁面頂部或聊天框內。"
+    "message": "直接在 claude.ai 查看方案用量、上下文視窗與提示快取倒數，顯示於頁面頂部或聊天框內。"
   },
   "planUsage": {
     "message": "方案用量"
@@ -127,6 +127,9 @@
   },
   "leaveReview": {
     "message": "喜歡嗎？留個評價吧"
+  },
+  "openClaudeForUsage": {
+    "message": "開啟 claude.ai 查看你的用量"
   },
   "notUsed": {
     "message": "0% · 未使用"

@@ -3,7 +3,7 @@
     "message": "Nutzungsleiste für Claude"
   },
   "extDesc": {
-    "message": "Plan-Nutzung, Kontextfenster und Prompt-Cache-Countdown direkt auf claude.ai – als Leiste oben oder im Chatfeld."
+    "message": "Plan-Nutzung, Kontextfenster und Prompt-Cache-Countdown direkt auf claude.ai, als Leiste oben oder im Chatfeld."
   },
   "planUsage": {
     "message": "Plan-Nutzung"
@@ -127,6 +127,9 @@
   },
   "leaveReview": {
     "message": "Gefällt dir die Erweiterung? Schreib eine Bewertung"
+  },
+  "openClaudeForUsage": {
+    "message": "Öffne claude.ai, um deine Nutzung zu sehen"
   },
   "notUsed": {
     "message": "0 % · ungenutzt"

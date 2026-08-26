@@ -3,7 +3,7 @@
     "message": "Barra de uso para Claude"
   },
   "extDesc": {
-    "message": "Veja o uso do plano Claude, a janela de contexto e o cache de prompts direto no claude.ai — no topo ou na caixa de chat."
+    "message": "Veja o uso do plano Claude, a janela de contexto e o cache de prompts direto no claude.ai, no topo ou na caixa de chat."
   },
   "planUsage": {
     "message": "Uso do plano"
@@ -127,6 +127,9 @@
   },
   "leaveReview": {
     "message": "Gostou? Deixe uma avaliação"
+  },
+  "openClaudeForUsage": {
+    "message": "Abra o claude.ai para ver seu uso"
   },
   "notUsed": {
     "message": "0% · sem uso"

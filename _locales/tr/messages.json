@@ -3,7 +3,7 @@
     "message": "Claude için Kullanım Çubuğu"
   },
   "extDesc": {
-    "message": "Plan kullanımı, bağlam penceresi ve prompt önbelleği geri sayımı claude.ai'de — üstte veya sohbet kutusunda."
+    "message": "Plan kullanımı, bağlam penceresi ve prompt önbelleği geri sayımı claude.ai'de, üstte veya sohbet kutusunda."
   },
   "planUsage": {
     "message": "Plan kullanımı"
@@ -127,6 +127,9 @@
   },
   "leaveReview": {
     "message": "Beğendiniz mi? Yorum bırakın"
+  },
+  "openClaudeForUsage": {
+    "message": "Kullanımınızı görmek için claude.ai'yi açın"
   },
   "notUsed": {
     "message": "%0 · kullanılmadı"

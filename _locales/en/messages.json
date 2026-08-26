@@ -3,7 +3,7 @@
     "message": "Usage Bar for Claude"
   },
   "extDesc": {
-    "message": "See your Claude plan usage, context window and prompt-cache countdown on claude.ai — as a top bar or inside the chat box."
+    "message": "See your Claude plan usage, context window and prompt-cache countdown on claude.ai, as a top bar or inside the chat box."
   },
   "planUsage": {
     "message": "Plan usage"
@@ -127,6 +127,9 @@
   },
   "leaveReview": {
     "message": "Enjoying it? Leave a review"
+  },
+  "openClaudeForUsage": {
+    "message": "Open claude.ai to see your usage"
   },
   "notUsed": {
     "message": "0% · unused"

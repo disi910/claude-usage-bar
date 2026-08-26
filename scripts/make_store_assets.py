@@ -211,7 +211,7 @@ def main() -> int:
         print(f"no source images found in {src_dir}", file=sys.stderr)
         return 1
 
-    # Clear stale outputs — the store allows max 5 screenshots, so leftovers
+    # Clear stale outputs, the store allows max 5 screenshots, so leftovers
     # from a previous run with different source names must not linger.
     if out_dir.exists():
         for old in out_dir.glob("*.png"):

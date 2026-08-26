@@ -1,48 +1,57 @@
-"""Generate icon16/48/128.png for the Claude Usage Bar extension."""
+"""Generate icon16/48/128.png for the Claude Usage Bar extension.
+
+The mark is the context ring: a coral tile with a cream meter arc that starts
+at twelve o'clock and runs 85% of the way round, so the remaining gap reads as
+"how much you have left". Geometry mirrors the in-page donut in content.js
+(round cap, track behind the arc) so the icon and the product agree.
+"""
+import math
+
 from PIL import Image, ImageDraw
 
 CORAL = (217, 119, 87, 255)
-CORAL_DEEP = (185, 81, 58, 255)
 CREAM = (245, 244, 238, 255)
-CREAM_BORDER = (232, 230, 220, 255)
+CREAM_TRACK = (245, 244, 238, 71)  # cream at 28% alpha, matching the arc's track
+
+FILL = 0.85          # fraction of the ring the arc covers
+SS = 8               # supersampling factor; the arc is drawn big and downscaled
 
 
 def render(size: int) -> Image.Image:
-    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    """Render one icon at `size` px, antialiased via an SS-times-larger canvas."""
+    s = size * SS
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
 
-    radius = int(size * 0.22)
-    d.rounded_rectangle(
-        [(0, 0), (size - 1, size - 1)],
-        radius=radius,
-        fill=CORAL,
-    )
+    d.rounded_rectangle([(0, 0), (s - 1, s - 1)], radius=int(s * 0.22), fill=CORAL)
 
-    pill_h = max(4, int(size * 0.28))
-    pill_w = int(size * 0.7)
-    pill_x = (size - pill_w) // 2
-    pill_y = (size - pill_h) // 2
-    pill_r = pill_h // 2
+    # Ring geometry as a fraction of the tile, so every size is the same mark.
+    stroke = s * 0.125
+    radius = s * 0.34375
+    cx = cy = s / 2
+    # PIL strokes an arc INWARD from its bounding box, so the box has to sit
+    # half a stroke outside the centerline for the ring to land on `radius`.
+    outer = radius + stroke / 2
+    box = [cx - outer, cy - outer, cx + outer, cy + outer]
 
-    d.rounded_rectangle(
-        [(pill_x, pill_y), (pill_x + pill_w, pill_y + pill_h)],
-        radius=pill_r,
-        fill=CREAM,
-        outline=CREAM_BORDER,
-        width=max(1, size // 64),
-    )
+    # -90 puts the start at twelve o'clock; sweep clockwise from there.
+    start = -90
+    end = start + 360 * FILL
 
-    fill_w = int(pill_w * 0.55)
-    if fill_w >= 2 * pill_r:
-        d.rounded_rectangle(
-            [(pill_x, pill_y), (pill_x + fill_w, pill_y + pill_h)],
-            radius=pill_r,
-            fill=CORAL_DEEP,
-        )
+    d.arc(box, start=start, end=start + 360, fill=CREAM_TRACK, width=int(stroke))
+    d.arc(box, start=start, end=end, fill=CREAM, width=int(stroke))
 
-    return img
+    # Round caps: PIL's arc has none, so cap both ends with a circle.
+    cap_r = stroke / 2
+    for angle in (start, end):
+        a = math.radians(angle)
+        px, py = cx + radius * math.cos(a), cy + radius * math.sin(a)
+        d.ellipse([px - cap_r, py - cap_r, px + cap_r, py + cap_r], fill=CREAM)
+
+    return img.resize((size, size), Image.LANCZOS)
 
 
-for s in (16, 48, 128):
-    render(s).save(f"icon{s}.png")
-    print(f"wrote icon{s}.png")
+if __name__ == "__main__":
+    for s in (16, 48, 128):
+        render(s).save(f"icon{s}.png")
+        print(f"wrote icon{s}.png")

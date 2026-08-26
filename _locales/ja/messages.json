@@ -128,6 +128,9 @@
   "leaveReview": {
     "message": "気に入ったらレビューをお願いします"
   },
+  "openClaudeForUsage": {
+    "message": "claude.ai を開くと使用量が表示されます"
+  },
   "notUsed": {
     "message": "0% · 未使用"
   },

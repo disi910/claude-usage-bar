@@ -3,7 +3,7 @@
     "message": "Barre d'utilisation pour Claude"
   },
   "extDesc": {
-    "message": "Suivez l'utilisation de votre forfait Claude, le contexte et le cache de prompts sur claude.ai — en haut ou dans la zone de chat."
+    "message": "Suivez l'utilisation de votre forfait Claude, le contexte et le cache de prompts sur claude.ai, en haut ou dans la zone de chat."
   },
   "planUsage": {
     "message": "Utilisation du forfait"
@@ -127,6 +127,9 @@
   },
   "leaveReview": {
     "message": "Ça vous plaît ? Laissez un avis"
+  },
+  "openClaudeForUsage": {
+    "message": "Ouvrez claude.ai pour voir votre utilisation"
   },
   "notUsed": {
     "message": "0 % · inutilisé"
