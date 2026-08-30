@@ -1,5 +1,8 @@
 {
   "extName": {
+    "message": "Nutzungsleiste für Claude: Limits & Kontext"
+  },
+  "popupTitle": {
     "message": "Nutzungsleiste für Claude"
   },
   "extDesc": {

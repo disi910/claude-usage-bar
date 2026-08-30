@@ -1,5 +1,8 @@
 {
   "extName": {
+    "message": "Claude için Kullanım Çubuğu: Limitler ve Bağlam Takibi"
+  },
+  "popupTitle": {
     "message": "Claude için Kullanım Çubuğu"
   },
   "extDesc": {

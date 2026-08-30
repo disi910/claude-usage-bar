@@ -1,5 +1,8 @@
 {
   "extName": {
+    "message": "Usage Bar for Claude: Limits & Context Tracker"
+  },
+  "popupTitle": {
     "message": "Usage Bar for Claude"
   },
   "extDesc": {

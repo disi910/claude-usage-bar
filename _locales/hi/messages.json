@@ -1,5 +1,8 @@
 {
   "extName": {
+    "message": "Claude के लिए उपयोग बार: सीमाएँ और संदर्भ ट्रैकर"
+  },
+  "popupTitle": {
     "message": "Claude के लिए उपयोग बार"
   },
   "extDesc": {

@@ -3,7 +3,7 @@ const t = (key, subs) => chrome.i18n.getMessage(key, subs);
 document.querySelectorAll("[data-i18n]").forEach((el) => {
   el.textContent = t(el.dataset.i18n);
 });
-document.title = t("extName");
+document.title = t("popupTitle");
 
 // ---------- settings ----------
 

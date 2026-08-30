@@ -1,5 +1,8 @@
 {
   "extName": {
+    "message": "Barra de utilização para Claude: limites e contexto"
+  },
+  "popupTitle": {
     "message": "Barra de utilização para Claude"
   },
   "extDesc": {

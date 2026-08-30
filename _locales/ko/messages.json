@@ -1,5 +1,8 @@
 {
   "extName": {
+    "message": "Claude 사용량 바: 한도 및 컨텍스트 추적"
+  },
+  "popupTitle": {
     "message": "Claude 사용량 바"
   },
   "extDesc": {

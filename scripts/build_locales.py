@@ -26,7 +26,8 @@ PLACEHOLDER_KEYS = {
 
 TRANSLATIONS = {
     "en": {
-        "extName": "Usage Bar for Claude",
+        "extName": "Usage Bar for Claude: Limits & Context Tracker",
+        "popupTitle": "Usage Bar for Claude",
         "extDesc": "See your Claude plan usage, context window and prompt-cache countdown on claude.ai, as a top bar or inside the chat box.",
         "planUsage": "Plan usage",
         "fiveHourLimit": "5-hour limit",
@@ -63,7 +64,8 @@ TRANSLATIONS = {
         "catFiles": "Files",
     },
     "es": {
-        "extName": "Barra de uso para Claude",
+        "extName": "Barra de uso para Claude: límites y contexto",
+        "popupTitle": "Barra de uso para Claude",
         "extDesc": "Consulta el uso de tu plan de Claude, la ventana de contexto y la caché de prompts en claude.ai: barra superior o en el chat.",
         "planUsage": "Uso del plan",
         "fiveHourLimit": "Límite de 5 horas",
@@ -100,7 +102,8 @@ TRANSLATIONS = {
         "catFiles": "Archivos",
     },
     "pt_BR": {
-        "extName": "Barra de uso para Claude",
+        "extName": "Barra de uso para Claude: limites e contexto",
+        "popupTitle": "Barra de uso para Claude",
         "extDesc": "Veja o uso do plano Claude, a janela de contexto e o cache de prompts direto no claude.ai, no topo ou na caixa de chat.",
         "planUsage": "Uso do plano",
         "fiveHourLimit": "Limite de 5 horas",
@@ -137,7 +140,8 @@ TRANSLATIONS = {
         "catFiles": "Arquivos",
     },
     "pt_PT": {
-        "extName": "Barra de utilização para Claude",
+        "extName": "Barra de utilização para Claude: limites e contexto",
+        "popupTitle": "Barra de utilização para Claude",
         "extDesc": "Veja a utilização do plano Claude, a janela de contexto e o cache de prompts no claude.ai, no topo ou na caixa de chat.",
         "planUsage": "Utilização do plano",
         "fiveHourLimit": "Limite de 5 horas",
@@ -174,7 +178,8 @@ TRANSLATIONS = {
         "catFiles": "Ficheiros",
     },
     "fr": {
-        "extName": "Barre d'utilisation pour Claude",
+        "extName": "Barre d'utilisation pour Claude : limites et contexte",
+        "popupTitle": "Barre d'utilisation pour Claude",
         "extDesc": "Suivez l'utilisation de votre forfait Claude, le contexte et le cache de prompts sur claude.ai, en haut ou dans la zone de chat.",
         "planUsage": "Utilisation du forfait",
         "fiveHourLimit": "Limite de 5 heures",
@@ -211,7 +216,8 @@ TRANSLATIONS = {
         "catFiles": "Fichiers",
     },
     "de": {
-        "extName": "Nutzungsleiste für Claude",
+        "extName": "Nutzungsleiste für Claude: Limits & Kontext",
+        "popupTitle": "Nutzungsleiste für Claude",
         "extDesc": "Plan-Nutzung, Kontextfenster und Prompt-Cache-Countdown direkt auf claude.ai, als Leiste oben oder im Chatfeld.",
         "planUsage": "Plan-Nutzung",
         "fiveHourLimit": "5-Stunden-Limit",
@@ -248,7 +254,8 @@ TRANSLATIONS = {
         "catFiles": "Dateien",
     },
     "it": {
-        "extName": "Barra di utilizzo per Claude",
+        "extName": "Barra di utilizzo per Claude: limiti e contesto",
+        "popupTitle": "Barra di utilizzo per Claude",
         "extDesc": "Utilizzo del piano Claude, finestra di contesto e cache dei prompt su claude.ai, in alto o nel riquadro della chat.",
         "planUsage": "Utilizzo del piano",
         "fiveHourLimit": "Limite di 5 ore",
@@ -285,7 +292,8 @@ TRANSLATIONS = {
         "catFiles": "File",
     },
     "ru": {
-        "extName": "Панель использования для Claude",
+        "extName": "Панель использования для Claude: лимиты и контекст",
+        "popupTitle": "Панель использования для Claude",
         "extDesc": "Использование плана Claude, окно контекста и таймер кэша промптов на claude.ai, сверху или в поле чата.",
         "planUsage": "Использование плана",
         "fiveHourLimit": "Лимит на 5 часов",
@@ -322,7 +330,8 @@ TRANSLATIONS = {
         "catFiles": "Файлы",
     },
     "zh_CN": {
-        "extName": "Claude 用量条",
+        "extName": "Claude 用量条：限额与上下文追踪",
+        "popupTitle": "Claude 用量条",
         "extDesc": "在 claude.ai 直接查看套餐用量、上下文窗口和提示缓存倒计时，显示在页面顶部或聊天框内。",
         "planUsage": "套餐用量",
         "fiveHourLimit": "5 小时限额",
@@ -359,7 +368,8 @@ TRANSLATIONS = {
         "catFiles": "文件",
     },
     "zh_TW": {
-        "extName": "Claude 用量列",
+        "extName": "Claude 用量列：限額與上下文追蹤",
+        "popupTitle": "Claude 用量列",
         "extDesc": "直接在 claude.ai 查看方案用量、上下文視窗與提示快取倒數，顯示於頁面頂部或聊天框內。",
         "planUsage": "方案用量",
         "fiveHourLimit": "5 小時限額",
@@ -396,7 +406,8 @@ TRANSLATIONS = {
         "catFiles": "檔案",
     },
     "ja": {
-        "extName": "Claude 使用量バー",
+        "extName": "Claude 使用量バー：制限とコンテキスト追跡",
+        "popupTitle": "Claude 使用量バー",
         "extDesc": "claude.ai上でプラン使用量・コンテキスト・プロンプトキャッシュの残り時間を表示。ページ上部またはチャット欄に配置できます。",
         "planUsage": "プラン使用量",
         "fiveHourLimit": "5時間の上限",
@@ -433,7 +444,8 @@ TRANSLATIONS = {
         "catFiles": "ファイル",
     },
     "ko": {
-        "extName": "Claude 사용량 바",
+        "extName": "Claude 사용량 바: 한도 및 컨텍스트 추적",
+        "popupTitle": "Claude 사용량 바",
         "extDesc": "claude.ai에서 플랜 사용량, 컨텍스트 창, 프롬프트 캐시 타이머를 확인하세요. 페이지 상단 또는 채팅창에 표시됩니다.",
         "planUsage": "플랜 사용량",
         "fiveHourLimit": "5시간 한도",
@@ -470,7 +482,8 @@ TRANSLATIONS = {
         "catFiles": "파일",
     },
     "hi": {
-        "extName": "Claude के लिए उपयोग बार",
+        "extName": "Claude के लिए उपयोग बार: सीमाएँ और संदर्भ ट्रैकर",
+        "popupTitle": "Claude के लिए उपयोग बार",
         "extDesc": "claude.ai पर प्लान उपयोग, कॉन्टेक्स्ट विंडो और प्रॉम्प्ट-कैश काउंटडाउन देखें, पेज के ऊपर या चैट बॉक्स में।",
         "planUsage": "प्लान उपयोग",
         "fiveHourLimit": "5 घंटे की सीमा",
@@ -507,7 +520,8 @@ TRANSLATIONS = {
         "catFiles": "फ़ाइलें",
     },
     "tr": {
-        "extName": "Claude için Kullanım Çubuğu",
+        "extName": "Claude için Kullanım Çubuğu: Limitler ve Bağlam Takibi",
+        "popupTitle": "Claude için Kullanım Çubuğu",
         "extDesc": "Plan kullanımı, bağlam penceresi ve prompt önbelleği geri sayımı claude.ai'de, üstte veya sohbet kutusunda.",
         "planUsage": "Plan kullanımı",
         "fiveHourLimit": "5 saatlik limit",
@@ -558,8 +572,10 @@ def main():
             errors.append(f"{locale}: unknown keys {sorted(extra)}")
         if len(strings.get("extDesc", "")) > 132:
             errors.append(f"{locale}: extDesc over 132 chars ({len(strings['extDesc'])})")
-        if len(strings.get("extName", "")) > 45:
-            errors.append(f"{locale}: extName over 45 chars ({len(strings['extName'])})")
+        # Chrome caps the manifest name at 75 chars; the store shows ~45 in
+        # search results, so keep the brand up front and keywords after the colon.
+        if len(strings.get("extName", "")) > 75:
+            errors.append(f"{locale}: extName over 75 chars ({len(strings['extName'])})")
         for key, names in PLACEHOLDER_KEYS.items():
             for name in names:
                 if f"${name.upper()}$" not in strings.get(key, ""):

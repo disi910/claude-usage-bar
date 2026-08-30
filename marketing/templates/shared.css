@@ -1,0 +1,200 @@
+/* Shared styles for Usage Bar for Claude marketing assets.
+   Rendered by scripts/render_marketing.py via headless Chrome.
+   Palette and type rules follow DESIGN.md: Helvetica everywhere, coral is
+   the only accent, warm neutrals, sentence case, no em dashes. */
+
+:root {
+  --coral: #D97757;
+  --coral-deep: #C96442;
+  --cream: #F5F4EE;
+  --muted: #B8B0A2;
+  --faint: #8A8375;
+  --ground: #191713;        /* deep warm black, page ground */
+  --win: #211F1B;           /* browser chrome */
+  --app: #262624;           /* claude.ai dark background */
+  --surface: #30302E;       /* composer / cards inside the app */
+  --panel: #2B2925;         /* hover panels */
+  --hair: rgba(255,255,255,.09);
+  --track: rgba(245,244,238,.16);
+  /* context category steps, dark theme (DESIGN.md) */
+  --cat-you: #F2B49E;
+  --cat-claude: #E08E70;
+  --cat-thinking: #D97757;
+  --cat-tools: #B85F42;
+  --cat-files: #96442E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--ground);
+  color: var(--cream);
+  overflow: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- backdrop: fine grid + coral glow + vignette ---------- */
+
+.bg { position: absolute; inset: 0; }
+.bg .grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(245,244,238,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,244,238,.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, #000 40%, transparent 100%);
+}
+.bg .glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(52% 42% at 72% 18%, rgba(217,119,87,.22), transparent 70%),
+    radial-gradient(60% 50% at 18% 92%, rgba(217,119,87,.10), transparent 70%);
+}
+.bg .vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(115% 95% at 50% 45%, transparent 55%, rgba(10,9,7,.6) 100%);
+}
+
+/* ---------- type ---------- */
+
+.kicker {
+  font-size: 14px; font-weight: 500;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--coral);
+}
+h1.head { font-size: 52px; font-weight: 600; letter-spacing: -.015em; line-height: 1.12; }
+.sub { font-size: 20px; font-weight: 400; line-height: 1.5; color: var(--muted); }
+
+/* ---------- browser window ---------- */
+
+.win {
+  position: relative;
+  background: var(--win);
+  border: 1px solid var(--hair);
+  border-radius: 14px;
+  box-shadow: 0 50px 140px rgba(0,0,0,.6), 0 0 90px rgba(217,119,87,.08);
+  overflow: hidden;
+}
+.titlebar {
+  display: flex; align-items: center;
+  height: 44px; padding: 0 16px;
+  background: #2A2723;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.dots { display: flex; gap: 8px; }
+.dots i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.dots i:nth-child(1) { background: #FF5F57; }
+.dots i:nth-child(2) { background: #FEBC2E; }
+.dots i:nth-child(3) { background: #28C840; }
+.urlpill {
+  margin: 0 auto;
+  display: flex; align-items: center; gap: 7px;
+  height: 26px; padding: 0 46px;
+  border-radius: 8px;
+  background: rgba(245,244,238,.07);
+  font-size: 12.5px; color: var(--muted);
+}
+.urlpill svg { opacity: .7; }
+.titlebar .puzzle { width: 12px; }
+.appbody { background: var(--app); position: relative; }
+
+/* claude.ai recreation */
+.greeting {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 38px; color: var(--cream); letter-spacing: -.01em;
+}
+.composer {
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 22px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.25);
+  padding: 18px 20px 14px;
+}
+.composer .ph { font-size: 17px; color: #9A938A; }
+.composer .row {
+  display: flex; align-items: center; margin-top: 26px;
+  font-size: 13.5px; color: var(--muted);
+}
+.composer .plus {
+  width: 30px; height: 30px; border-radius: 9px;
+  border: 1px solid var(--hair);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 400; color: var(--muted);
+}
+.composer .model { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.composer .model b { font-weight: 500; color: var(--cream); }
+
+/* ---------- the usage bar ---------- */
+
+.ubar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px 18px;
+  border-radius: 14px;
+  background: rgba(48,48,46,.92);
+  border: 1px solid var(--hair);
+  box-shadow: 0 10px 34px rgba(0,0,0,.35);
+  font-variant-numeric: tabular-nums;
+}
+.ubar .pct { font-size: 15px; font-weight: 600; white-space: nowrap; }
+.ubar .track { display: block; flex: 1; height: 6px; border-radius: 99px; background: var(--track); overflow: hidden; }
+.ubar .fill { display: block; height: 100%; border-radius: 99px; background: var(--coral); }
+.ubar .reset { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+/* inline variant: hairline strip inside the composer, above the text */
+.ubar.inline {
+  background: transparent; border: none; box-shadow: none;
+  padding: 0 0 14px; margin-bottom: 14px;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+/* ---------- hover panels ---------- */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--hair);
+  border-radius: 14px;
+  padding: 20px 22px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  font-variant-numeric: tabular-nums;
+}
+.panel .ptitle {
+  font-size: 11.5px; font-weight: 500;
+  letter-spacing: .13em; text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.prow { margin-bottom: 16px; }
+.prow:last-child { margin-bottom: 0; }
+.prow .top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
+.prow .name { font-size: 14px; font-weight: 600; }
+.prow .val { font-size: 12.5px; color: var(--muted); }
+.prow .bar { height: 5px; border-radius: 99px; background: var(--track); overflow: hidden; }
+.prow .bar i { display: block; height: 100%; border-radius: 99px; background: var(--coral); }
+
+/* context panel */
+.ctxhead { display: flex; align-items: center; gap: 18px; margin-bottom: 18px; }
+.ctxhead .lines { font-size: 13.5px; line-height: 1.65; font-weight: 600; }
+.ctxhead .lines span { display: block; }
+.crow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0 7px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  font-size: 13px;
+}
+.crow:last-child { border-bottom: none; }
+.crow .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 9px; }
+.crow .lbl { display: flex; align-items: center; font-weight: 600; }
+.crow .num { color: var(--muted); }
+
+/* ---------- logo mark (matches icon.py geometry) ---------- */
+
+.mark { display: block; }
+
+/* ---------- footer lockup for ads ---------- */
+
+.lockup { display: flex; align-items: center; gap: 12px; }
+.lockup .name { font-size: 16px; font-weight: 600; }
+.lockup .meta { font-size: 13px; color: var(--muted); }

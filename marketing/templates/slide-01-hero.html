@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="shared.css">
+<style>
+  body { width: 1280px; height: 800px; }
+  .headwrap { position: absolute; top: 74px; left: 0; right: 0; text-align: center; }
+  .headwrap .kicker { margin-bottom: 18px; }
+  .headwrap h1 { margin-bottom: 16px; }
+  .headwrap .sub { max-width: 640px; margin: 0 auto; }
+  .win { position: absolute; left: 50%; transform: translateX(-50%); top: 368px; width: 980px; height: 520px; }
+  .appbody { height: 476px; padding: 26px 60px 0; }
+  .ubar { width: 660px; margin: 0 auto; }
+  .greeting { margin-top: 64px; }
+  .composer { width: 760px; margin: 40px auto 0; }
+</style></head>
+<body>
+  <div class="bg"><div class="glow"></div><div class="grid"></div><div class="vignette"></div></div>
+
+  <div class="headwrap">
+    <div class="kicker">Usage bar for Claude</div>
+    <h1 class="head">Your Claude usage, always in sight</h1>
+    <div class="sub">Session and weekly limits on every claude.ai page. No clicks, no setup.</div>
+  </div>
+
+  <div class="win">
+    <div class="titlebar">
+      <div class="dots"><i></i><i></i><i></i></div>
+      <div class="urlpill">
+        <svg width="11" height="12" viewBox="0 0 11 12" fill="none"><rect x="1" y="5" width="9" height="6.5" rx="1.6" fill="#B8B0A2"/><path d="M3 5V3.6a2.5 2.5 0 0 1 5 0V5" stroke="#B8B0A2" stroke-width="1.4" fill="none"/></svg>
+        claude.ai
+      </div>
+    </div>
+    <div class="appbody">
+      <div class="ubar">
+        <span class="pct">62 %</span>
+        <span class="track"><span class="fill" style="width:62%"></span></span>
+        <span class="reset">resets in 2h 14m</span>
+        <svg width="22" height="22" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="none" stroke="rgba(245,244,238,.18)" stroke-width="7"/><circle cx="20" cy="20" r="15" fill="none" stroke="#D97757" stroke-width="7" stroke-linecap="round" stroke-dasharray="17.9 94.25" transform="rotate(-90 20 20)"/></svg>
+        <span class="pct" style="font-size:13px">19%</span>
+      </div>
+      <div class="greeting">
+        <svg width="36" height="36" viewBox="0 0 36 36"><g stroke="#D97757" stroke-width="3.4" stroke-linecap="round"><line x1="18" y1="3" x2="18" y2="33"/><line x1="3" y1="18" x2="33" y2="18"/><line x1="7.4" y1="7.4" x2="28.6" y2="28.6"/><line x1="28.6" y1="7.4" x2="7.4" y2="28.6"/></g></svg>
+        Good evening
+      </div>
+      <div class="composer">
+        <div class="ph">How can I help you today?</div>
+        <div class="row">
+          <span class="plus">+</span>
+          <span class="model"><b>Sonnet 5</b> Medium
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="#B8B0A2" stroke-width="1.4" stroke-linecap="round"><rect x="4.5" y="1" width="5" height="8.4" rx="2.5"/><path d="M1.8 7.4a5.2 5.2 0 0 0 10.4 0M7 12.8v2.4"/></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body></html>

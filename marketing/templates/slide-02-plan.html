@@ -1,0 +1,73 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="shared.css">
+<style>
+  body { width: 1280px; height: 800px; }
+  .copy { position: absolute; left: 96px; top: 0; bottom: 0; width: 460px;
+          display: flex; flex-direction: column; justify-content: center; }
+  .copy .kicker { margin-bottom: 18px; }
+  .copy h1 { font-size: 48px; margin-bottom: 18px; }
+  .copy .sub { font-size: 19px; }
+  .visual { position: absolute; left: 620px; top: 66px; }
+  .win { width: 760px; height: 760px; }
+  .appbody { height: 716px; padding: 24px 44px 0; }
+  .ghost { opacity: .35; }
+  .ghost .composer { width: 560px; margin: 44px auto 0; }
+  .ubar { width: 560px; margin: 0 auto; }
+  .panel.plan { width: 480px; margin: 26px auto 0; transform: scale(1.12); transform-origin: top center; }
+</style></head>
+<body>
+  <div class="bg"><div class="glow"></div><div class="grid"></div><div class="vignette"></div></div>
+
+  <div class="copy">
+    <div class="kicker">Plan usage</div>
+    <h1 class="head">Hover for the full picture</h1>
+    <div class="sub">Every limit on your plan with live reset timers: your 5-hour session, the weekly cap, extra credits and routines.</div>
+  </div>
+
+  <div class="visual">
+    <div class="win">
+      <div class="titlebar">
+        <div class="dots"><i></i><i></i><i></i></div>
+        <div class="urlpill">
+          <svg width="11" height="12" viewBox="0 0 11 12" fill="none"><rect x="1" y="5" width="9" height="6.5" rx="1.6" fill="#B8B0A2"/><path d="M3 5V3.6a2.5 2.5 0 0 1 5 0V5" stroke="#B8B0A2" stroke-width="1.4" fill="none"/></svg>
+          claude.ai
+        </div>
+      </div>
+      <div class="appbody">
+        <div class="ubar">
+          <span class="pct">62 %</span>
+          <span class="track"><span class="fill" style="width:62%"></span></span>
+          <span class="reset">resets in 2h 14m</span>
+          <svg width="22" height="22" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="none" stroke="rgba(245,244,238,.18)" stroke-width="7"/><circle cx="20" cy="20" r="15" fill="none" stroke="#D97757" stroke-width="7" stroke-linecap="round" stroke-dasharray="17.9 94.25" transform="rotate(-90 20 20)"/></svg>
+          <span class="pct" style="font-size:13px">19%</span>
+        </div>
+        <div class="panel plan">
+          <div class="ptitle">Plan usage</div>
+          <div class="prow">
+            <div class="top"><span class="name">5-hour limit</span><span class="val">62% · resets in 2h 14m</span></div>
+            <div class="bar"><i style="width:62%"></i></div>
+          </div>
+          <div class="prow">
+            <div class="top"><span class="name">Weekly · all models</span><span class="val">34% · resets in 3d</span></div>
+            <div class="bar"><i style="width:34%"></i></div>
+          </div>
+          <div class="prow">
+            <div class="top"><span class="name">Extra credits</span><span class="val">0% · unused</span></div>
+            <div class="bar"><i style="width:0%"></i></div>
+          </div>
+          <div class="prow">
+            <div class="top"><span class="name">Routines</span><span class="val">0% · unused</span></div>
+            <div class="bar"><i style="width:0%"></i></div>
+          </div>
+        </div>
+        <div class="ghost">
+          <div class="composer">
+            <div class="ph">How can I help you today?</div>
+            <div class="row"><span class="plus">+</span><span class="model"><b>Sonnet 5</b> Medium</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body></html>

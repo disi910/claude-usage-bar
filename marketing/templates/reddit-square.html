@@ -1,0 +1,57 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="shared.css">
+<style>
+  body { width: 1080px; height: 1080px; }
+  .copy { position: absolute; left: 0; right: 0; top: 110px; text-align: center; }
+  .copy h1 { font-size: 54px; font-weight: 600; letter-spacing: -.015em; line-height: 1.12; margin-bottom: 22px; }
+  .copy .sub { font-size: 21px; line-height: 1.55; color: var(--muted); max-width: 720px; margin: 0 auto; }
+  .visual { position: absolute; left: 50%; transform: translateX(-50%); top: 400px; width: 640px; }
+  .ubar { margin-bottom: 28px; padding: 14px 20px; }
+  .ubar .pct { font-size: 17px; }
+  .ubar .reset { font-size: 14px; }
+  .panel.plan { width: 100%; padding: 26px 28px; }
+  .panel .ptitle { font-size: 13px; margin-bottom: 20px; }
+  .prow { margin-bottom: 20px; }
+  .prow .name { font-size: 17px; }
+  .prow .val { font-size: 15px; }
+  .prow .bar { height: 6px; }
+  .lockup { position: absolute; left: 50%; transform: translateX(-50%); bottom: 62px; }
+  .lockup .name { font-size: 18px; }
+  .lockup .meta { font-size: 14px; }
+</style></head>
+<body>
+  <div class="bg"><div class="glow"></div><div class="grid"></div><div class="vignette"></div></div>
+
+  <div class="copy">
+    <h1>Know before you<br>hit the wall</h1>
+    <div class="sub">A tiny bar on claude.ai that shows your session and weekly limits, and when they come back.</div>
+  </div>
+
+  <div class="visual">
+    <div class="ubar">
+      <span class="pct">89 %</span>
+      <span class="track"><span class="fill" style="width:89%"></span></span>
+      <span class="reset">resets in 41m</span>
+    </div>
+    <div class="panel plan">
+      <div class="ptitle">Plan usage</div>
+      <div class="prow">
+        <div class="top"><span class="name">5-hour limit</span><span class="val">89% · resets in 41m</span></div>
+        <div class="bar"><i style="width:89%"></i></div>
+      </div>
+      <div class="prow">
+        <div class="top"><span class="name">Weekly · all models</span><span class="val">54% · resets in 2d</span></div>
+        <div class="bar"><i style="width:54%"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lockup">
+    <svg class="mark" width="36" height="36" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="#D97757"/><circle cx="64" cy="64" r="41" fill="none" stroke="#F5F4EE" stroke-opacity=".39" stroke-width="15.4"/><circle cx="64" cy="64" r="41" fill="none" stroke="#F5F4EE" stroke-width="15.4" stroke-linecap="round" stroke-dasharray="193.2 257.6" transform="rotate(-90 64 64)"/></svg>
+    <div>
+      <div class="name">Usage Bar for Claude</div>
+      <div class="meta">free Chrome extension, no sign in</div>
+    </div>
+  </div>
+</body></html>

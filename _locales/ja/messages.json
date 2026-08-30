@@ -1,5 +1,8 @@
 {
   "extName": {
+    "message": "Claude 使用量バー：制限とコンテキスト追跡"
+  },
+  "popupTitle": {
     "message": "Claude 使用量バー"
   },
   "extDesc": {
