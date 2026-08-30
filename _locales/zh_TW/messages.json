@@ -1,5 +1,8 @@
 {
   "extName": {
+    "message": "Claude 用量列：限額與上下文追蹤"
+  },
+  "popupTitle": {
     "message": "Claude 用量列"
   },
   "extDesc": {

@@ -1,5 +1,8 @@
 {
   "extName": {
+    "message": "Панель использования для Claude: лимиты и контекст"
+  },
+  "popupTitle": {
     "message": "Панель использования для Claude"
   },
   "extDesc": {
