@@ -1,0 +1,24 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="shared.css">
+<style>
+  body { width: 440px; height: 280px; display: flex; align-items: center; justify-content: center; }
+  .bg .grid { background-size: 34px 34px; }
+  .stack { position: relative; text-align: center; }
+  .stack .name { font-size: 22px; font-weight: 600; margin: 16px 0 20px; letter-spacing: -.01em; }
+  .ubar { width: 320px; padding: 9px 14px; gap: 11px; }
+  .ubar .pct { font-size: 13px; }
+  .ubar .reset { font-size: 11px; }
+</style></head>
+<body>
+  <div class="bg"><div class="glow"></div><div class="grid"></div><div class="vignette"></div></div>
+  <div class="stack">
+    <svg class="mark" style="margin:0 auto" width="58" height="58" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="#D97757"/><circle cx="64" cy="64" r="41" fill="none" stroke="#F5F4EE" stroke-opacity=".39" stroke-width="15.4"/><circle cx="64" cy="64" r="41" fill="none" stroke="#F5F4EE" stroke-width="15.4" stroke-linecap="round" stroke-dasharray="193.2 257.6" transform="rotate(-90 64 64)"/></svg>
+    <div class="name">Usage Bar for Claude</div>
+    <div class="ubar">
+      <span class="pct">62 %</span>
+      <span class="track"><span class="fill" style="width:62%"></span></span>
+      <span class="reset">resets in 2h 14m</span>
+    </div>
+  </div>
+</body></html>
